@@ -1,0 +1,78 @@
+@model BookShelf.ViewModels.Auth.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+    var visual = new BookShelf.ViewModels.Auth.AuthVisualViewModel
+    {
+        Eyebrow = "Join BookShelf",
+        Heading = "Your library, wherever you go.",
+        Copy = "Create an account to save books, track loans, and pick up right where you left off.",
+        ShowStats = false
+    };
+}
+
+<div class="auth-shell">
+    <partial name="_AuthVisual" model="visual" />
+
+    <section class="auth-panel">
+        <div class="panel-inner">
+            <div class="brand-row">
+                <div class="brand-badge">B</div>
+                <div>
+                    <div class="mini-label">Books &amp; stories</div>
+                    <h1>BookShelf</h1>
+                </div>
+            </div>
+
+            <div class="heading-block">
+                <p class="eyebrow">Get started</p>
+                <h3>Create your account</h3>
+            </div>
+
+            <form asp-controller="Account" asp-action="Register" method="post" class="auth-form">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <div class="field-group">
+                    <label asp-for="FullName">Full name</label>
+                    <div class="input-shell">
+                        <input asp-for="FullName" placeholder="Kidus Tesfaye" autocomplete="name" />
+                    </div>
+                    <span asp-validation-for="FullName" class="field-error"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="Email">Email address</label>
+                    <div class="input-shell">
+                        <input asp-for="Email" type="email" placeholder="you@example.com" autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="Password">Password</label>
+                    <div class="input-shell">
+                        <input asp-for="Password" type="password" placeholder="At least 8 characters" autocomplete="new-password" />
+                    </div>
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <div class="field-group">
+                    <label asp-for="ConfirmPassword">Confirm password</label>
+                    <div class="input-shell">
+                        <input asp-for="ConfirmPassword" type="password" placeholder="Re-enter your password" autocomplete="new-password" />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Create account</button>
+            </form>
+
+            <p class="signup-text">
+                Already have an account? <a asp-controller="Account" asp-action="Login" class="text-link">Sign in</a>
+            </p>
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

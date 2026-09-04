@@ -1,0 +1,35 @@
+@model BookShelf.ViewModels.Books.BookViewModel
+
+@{
+    ViewData["Title"] = "Create Book";
+}
+
+<h2>Add New Book</h2>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label asp-for="Title">Title</label>
+        <input asp-for="Title" />
+    </div>
+    <div>
+        <label asp-for="Author">Author</label>
+        <input asp-for="Author" />
+    </div>
+    <div>
+        <label asp-for="ISBN">ISBN</label>
+        <input asp-for="ISBN" />
+    </div>
+    <div>
+        <label asp-for="Category">Category</label>
+        <input asp-for="Category" />
+    </div>
+    <div>
+        <label asp-for="Quantity">Quantity</label>
+        <input asp-for="Quantity" type="number" />
+    </div>
+    <div>
+        <label asp-for="Price">Price</label>
+        <input asp-for="Price" type="number" step="0.01" />
+    </div>
+    <button type="submit">Save</button>
+</form>

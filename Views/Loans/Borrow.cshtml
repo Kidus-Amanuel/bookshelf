@@ -1,0 +1,19 @@
+@model BookShelf.ViewModels.Loans.LoanViewModel
+
+@{
+    ViewData["Title"] = "Borrow Book";
+}
+
+<h2>Borrow Book</h2>
+
+<form asp-action="Borrow" method="post">
+    <div>
+        <label asp-for="BookId">Book Id</label>
+        <input asp-for="BookId" type="number" />
+    </div>
+    <div>
+        <label asp-for="UserId">User Id</label>
+        <input asp-for="UserId" type="number" />
+    </div>
+    <button type="submit">Borrow</button>
+</form>

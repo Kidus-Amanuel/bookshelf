@@ -1,0 +1,29 @@
+@model IEnumerable<BookShelf.Models.Loan>
+
+@{
+    ViewData["Title"] = "Loans";
+}
+
+<h2>Loans</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Book</th>
+            <th>Borrowed</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var loan in Model)
+        {
+            <tr>
+                <td>@loan.User.FullName</td>
+                <td>@loan.Book.Title</td>
+                <td>@loan.BorrowedAt.ToShortDateString()</td>
+                <td>@(loan.IsReturned ? "Returned" : "Active")</td>
+            </tr>
+        }
+    </tbody>
+</table>

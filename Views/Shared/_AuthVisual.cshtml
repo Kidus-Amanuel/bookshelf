@@ -1,0 +1,32 @@
+@model BookShelf.ViewModels.Auth.AuthVisualViewModel
+
+<aside class="auth-visual">
+    <div class="visual-content">
+        <div class="eyebrow-row">
+            <span class="status-dot"></span>
+            <span>@Model.Eyebrow</span>
+        </div>
+
+        <h2>@Model.Heading</h2>
+
+        <p class="visual-copy">@Model.Copy</p>
+
+        @if (Model.ShowStats)
+        {
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <strong>@Model.Stat1Value</strong>
+                    <span>@Model.Stat1Label</span>
+                </div>
+                <div class="stat-item">
+                    <strong>@Model.Stat2Value</strong>
+                    <span>@Model.Stat2Label</span>
+                </div>
+                <div class="stat-item wide">
+                    <strong>@Model.Stat3Value</strong>
+                    <span>@Model.Stat3Label</span>
+                </div>
+            </div>
+        }
+    </div>
+</aside>

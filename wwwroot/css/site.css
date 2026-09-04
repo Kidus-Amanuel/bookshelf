@@ -1,0 +1,572 @@
+/* ==========================================================================
+   BOOKSHELF — DESIGN SYSTEM
+   One token source. Every color, spacing, radius, and shadow in the app
+   pulls from this block — never hardcode a hex value or a px number
+   anywhere else in the codebase. That's what "standardized" means in
+   practice: change a value here, it updates everywhere at once.
+   ========================================================================== */
+
+:root {
+  /* Color — ink-green + warm paper, brass accent. Grounded in "library",
+     not the generic purple/teal SaaS default. */
+  --color-ink-900: #16261d;
+  --color-ink-800: #223a2c;
+  --color-ink-700: #2f4a3a;
+  --color-ink-600: #3d5c49;
+
+  --color-paper-50: #faf7f1;
+  --color-paper-100: #f3ede1;
+  --color-paper-200: #e9e0cf;
+
+  --color-brass-500: #b08d4f;
+  --color-brass-600: #97763f;
+  --color-brass-700: #7a6134;
+
+  --color-surface: #ffffff;
+  --color-surface-soft: #fbfaf7;
+
+  --color-text-900: #1a201c;
+  --color-text-700: #3f4a43;
+  --color-text-500: #6b7770;
+  --color-text-400: #94a099;
+
+  --color-border: rgba(22, 38, 29, 0.12);
+  --color-border-strong: rgba(22, 38, 29, 0.24);
+
+  --color-danger-500: #b3261e;
+  --color-danger-bg: rgba(179, 38, 30, 0.07);
+  --color-success-500: #2b7a4b;
+  --color-success-bg: rgba(43, 122, 75, 0.08);
+  --color-warning-500: #a6721b;
+
+  /* Spacing — 4px base scale. Every margin/padding in the app should be
+     one of these values, not an arbitrary number. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radius — 3 sizes only. Small controls, cards, feature panels. */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* Shadow — 2 depths. Resting card, and elevated/focused surface. */
+  --shadow-card: 0 1px 2px rgba(22, 38, 29, 0.06), 0 8px 24px rgba(22, 38, 29, 0.06);
+  --shadow-elevated: 0 4px 8px rgba(22, 38, 29, 0.08), 0 20px 48px rgba(22, 38, 29, 0.12);
+
+  /* Typography — one serif for headings (the "library" signature), one
+     system sans for UI and body, so it stays fast with no font loading. */
+  --font-display: "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --text-xs: 0.8rem;
+  --text-sm: 0.9rem;
+  --text-base: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+/* ==========================================================================
+   RESET
+   ========================================================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.6;
+  background: var(--color-paper-50);
+  color: var(--color-text-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0 0 var(--space-3);
+  color: var(--color-ink-900);
+}
+
+h1 {
+  font-size: var(--text-3xl);
+}
+h2 {
+  font-size: var(--text-2xl);
+}
+h3 {
+  font-size: var(--text-xl);
+}
+
+p {
+  margin: 0 0 var(--space-4);
+  max-width: 65ch; /* keeps body text readable, never a full-width wall */
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: var(--color-ink-700);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-brass-600);
+}
+
+/* Visible keyboard focus everywhere — accessibility floor, not optional */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-brass-500);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(176, 141, 79, 0.22);
+}
+
+.text-muted {
+  color: var(--color-text-500);
+}
+
+.text-error {
+  color: var(--color-danger-500);
+}
+
+/* ==========================================================================
+   SURFACES
+   ========================================================================== */
+
+.surface-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-6);
+}
+
+/* ==========================================================================
+   BUTTONS
+   One primary action per screen. Secondary buttons are quiet on purpose —
+   they should never compete with the primary action for attention.
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-ink-800);
+  color: var(--color-paper-50);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-ink-900);
+}
+
+.btn-accent {
+  background: var(--color-brass-500);
+  color: var(--color-ink-900);
+}
+
+.btn-accent:hover:not(:disabled) {
+  background: var(--color-brass-600);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text-900);
+  border: 1px solid var(--color-border-strong);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-paper-100);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ==========================================================================
+   FORMS
+   One input pattern used everywhere: label above field, helper/error
+   below it. Never inline-right labels, never placeholder-as-label.
+   ========================================================================== */
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.field-group label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--color-text-700);
+}
+
+.input-shell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  padding: 0 var(--space-4);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.input-shell:focus-within {
+  border-color: var(--color-brass-500);
+  box-shadow: 0 0 0 3px rgba(176, 141, 79, 0.16);
+}
+
+.input-shell input {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+}
+
+.input-shell input::placeholder {
+  color: var(--color-text-400);
+}
+
+.field-error,
+.field-validation-error {
+  color: var(--color-danger-500);
+  font-size: var(--text-xs);
+}
+
+.validation-summary {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-bg);
+  border: 1px solid rgba(179, 38, 30, 0.16);
+  color: var(--color-danger-500);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-4);
+}
+
+.validation-summary ul {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.check-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-500);
+}
+
+.check-row input {
+  accent-color: var(--color-brass-500);
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   STATUS PILLS
+   Sentence case, not tracked-out uppercase — quieter, still legible.
+   ========================================================================== */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.pill-success {
+  background: var(--color-success-bg);
+  color: var(--color-success-500);
+}
+
+.pill-info {
+  background: rgba(47, 74, 58, 0.08);
+  color: var(--color-ink-700);
+}
+
+/* ==========================================================================
+   AUTH LAYOUT (login / register)
+   Two-pane split. Left pane carries the brand moment; right pane is the
+   form. On small screens the brand pane collapses above the form.
+   ========================================================================== */
+
+.auth-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+}
+
+.auth-visual {
+  position: relative;
+  overflow: hidden;
+  background: var(--color-ink-900);
+  padding: var(--space-12) var(--space-10);
+  display: flex;
+  align-items: center;
+}
+
+.auth-visual::before {
+  content: "";
+  position: absolute;
+  inset: auto auto -30% -15%;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(176, 141, 79, 0.22), transparent 70%);
+}
+
+.visual-content {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  color: var(--color-paper-50);
+}
+
+.eyebrow-row {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--text-xs);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-brass-500);
+}
+
+.visual-content h2 {
+  font-family: var(--font-display);
+  color: #fff;
+  margin: var(--space-6) 0 var(--space-4);
+  font-size: clamp(2rem, 2.6vw, 2.75rem);
+}
+
+.visual-copy {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 420px;
+}
+
+.stats-grid {
+  margin-top: var(--space-8);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: var(--space-4);
+  max-width: 400px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stat-item.wide {
+  grid-column: 1 / -1;
+}
+
+.stat-item strong {
+  font-size: var(--text-xl);
+  color: #fff;
+}
+
+.stat-item span {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: var(--text-sm);
+}
+
+.auth-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--space-8);
+  background: var(--color-paper-50);
+}
+
+.panel-inner {
+  width: min(100%, 460px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated);
+  padding: var(--space-8);
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.brand-badge {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--color-ink-900);
+  color: var(--color-brass-500);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.mini-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-500);
+}
+
+.brand-row h1 {
+  margin: 2px 0 0;
+  font-size: var(--text-xl);
+}
+
+.heading-block {
+  margin-bottom: var(--space-6);
+}
+
+.heading-block .eyebrow {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-500);
+  font-size: var(--text-sm);
+}
+
+.heading-block h3 {
+  font-size: clamp(1.7rem, 1.5vw + 1rem, 2.2rem);
+  margin: 0;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.signup-text {
+  margin: var(--space-5) 0 0;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--color-text-500);
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-visual {
+    min-height: 260px;
+    padding: var(--space-8) var(--space-6);
+  }
+
+  .auth-panel {
+    padding: var(--space-6) var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .panel-inner {
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Respect users who've asked for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,58 @@
+@model BookShelf.ViewModels.Auth.EmailConfirmationViewModel
+@{
+    ViewData["Title"] = Model.IsConfirmed ? "Email confirmed" : "Check your email";
+    var visual = new BookShelf.ViewModels.Auth.AuthVisualViewModel
+    {
+        Eyebrow = "One more step",
+        Heading = Model.IsConfirmed ? "You're all set." : "Almost there.",
+        Copy = Model.IsConfirmed
+            ? "Your email is confirmed. You can now sign in to your account."
+            : "We just need to confirm it's really you before you can sign in.",
+        ShowStats = false
+    };
+}
+
+<div class="auth-shell">
+    <partial name="_AuthVisual" model="visual" />
+
+    <section class="auth-panel">
+        <div class="panel-inner" style="text-align:center">
+            <div class="brand-row" style="justify-content:center">
+                <div class="brand-badge">B</div>
+                <div style="text-align:left">
+                    <div class="mini-label">Books &amp; stories</div>
+                    <h1>BookShelf</h1>
+                </div>
+            </div>
+
+            @if (Model.IsConfirmed)
+            {
+                <span class="pill pill-success" style="margin-bottom: var(--space-4)">Email confirmed</span>
+                <h3>You're verified, @Model.Email</h3>
+                <p class="text-muted">Your account is ready. Sign in to start using BookShelf.</p>
+
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-block" style="margin-top: var(--space-5)">
+                    Continue to sign in
+                </a>
+            }
+            else
+            {
+                <span class="pill pill-info" style="margin-bottom: var(--space-4)">Pending confirmation</span>
+                <h3>Check your inbox</h3>
+                <p class="text-muted">
+                    We sent a confirmation link to <strong>@Model.Email</strong>.
+                    Click the link in that email to activate your account.
+                </p>
+
+                <form asp-controller="Account" asp-action="ResendConfirmation" method="post" style="margin-top: var(--space-5)">
+                    <input type="hidden" name="Email" value="@Model.Email" />
+                    <button type="submit" class="btn btn-secondary btn-block">Resend email</button>
+                </form>
+            }
+
+            <p class="signup-text">
+                Wrong email? <a asp-controller="Account" asp-action="Register" class="text-link">Start over</a>
+            </p>
+        </div>
+    </section>
+</div>
