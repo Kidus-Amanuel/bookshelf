@@ -27,7 +27,6 @@
             <a class="nav-item @(currentController == "Books" ? "active" : "")" asp-controller="Books" asp-action="Index">Browse books</a>
             <a class="nav-item @(currentController == "Loans" ? "active" : "")" asp-controller="Loans" asp-action="MyLoans">My loans</a>
             <a class="nav-item @(currentController == "Orders" && currentAction != "Cart" ? "active" : "")" asp-controller="Orders" asp-action="MyOrders">My orders</a>
-            <a class="nav-item @(currentController == "Orders" && currentAction == "Cart" ? "active" : "")" asp-controller="Orders" asp-action="Cart">My Cart</a>
             <a class="nav-item @(currentController == "Subscription" || currentController == "Subscriptions" ? "active" : "")" asp-controller="Subscription" asp-action="Index">Subscription</a>
             <a class="nav-item @(currentAction == "BecomeAuthor" ? "active" : "")" asp-controller="Account" asp-action="BecomeAuthor">Become an author</a>
         </nav>
