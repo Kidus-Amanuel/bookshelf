@@ -1,0 +1,187 @@
+@model List<BookShelf.Models.AuthorProfile>
+@{
+    ViewData["Title"] = "Author applications";
+    var pending = Model.Where(a => a.Status == "Pending").ToList();
+    var approved = Model.Where(a => a.Status == "Approved").ToList();
+    var rejected = Model.Where(a => a.Status == "Rejected").ToList();
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Approvals</p>
+                <h1>Author applications</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Pending</span>
+                <strong class="stat-card-value">@pending.Count</strong>
+                <small class="stat-card-meta @(pending.Count > 0 ? "is-warning" : "")">awaiting review</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Approved</span>
+                <strong class="stat-card-value">@approved.Count</strong>
+                <small class="stat-card-meta">active authors</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Rejected</span>
+                <strong class="stat-card-value">@rejected.Count</strong>
+                <small class="stat-card-meta">declined</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Total</span>
+                <strong class="stat-card-value">@Model.Count</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+        </section>
+
+        @* ============ PENDING QUEUE ============ *@
+        <section class="panel-card large" style="margin-bottom: 1.5rem;">
+            <div class="panel-header">
+                <h3>Pending review</h3>
+                <span class="info-pill">@pending.Count waiting</span>
+            </div>
+
+            @if (!pending.Any())
+            {
+                <p class="text-muted" style="padding:1rem;">No applications in the queue. 🎉</p>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Pen name</th>
+                            <th>Applicant</th>
+                            <th>Email</th>
+                            <th>Applied</th>
+                            <th>Bio</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in pending)
+                        {
+                            <tr>
+                                <td><strong>@app.PenName</strong></td>
+                                <td>@app.User?.FullName</td>
+                                <td class="text-muted">@app.User?.Email</td>
+                                <td>@app.AppliedAt.ToString("MMM d, yyyy")</td>
+                                <td>
+                                    <span title="@app.Bio">
+                                        @(app.Bio.Length > 60 ? app.Bio.Substring(0, 60) + "…" : app.Bio)
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex; gap:.4rem;">
+                                        <a asp-controller="Admin" asp-action="AuthorApplicationDetails" asp-route-id="@app.Id" class="btn btn-secondary btn-sm">Review</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        @* ============ APPROVED ============ *@
+        <section class="panel-card large" style="margin-bottom: 1.5rem;">
+            <div class="panel-header">
+                <h3>Approved authors</h3>
+                <span class="info-pill">@approved.Count active</span>
+            </div>
+
+            @if (!approved.Any())
+            {
+                <p class="text-muted" style="padding:1rem;">No approved authors yet.</p>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Pen name</th>
+                            <th>Applicant</th>
+                            <th>Email</th>
+                            <th>Approved on</th>
+                            <th>Approved by</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in approved)
+                        {
+                            <tr>
+                                <td><strong>@app.PenName</strong></td>
+                                <td>@app.User?.FullName</td>
+                                <td class="text-muted">@app.User?.Email</td>
+                                <td>@app.ApprovedAt?.ToString("MMM d, yyyy")</td>
+                                <td class="text-muted">@(app.ApprovedByAdmin?.FullName ?? "—")</td>
+                                <td>
+                                    <a asp-controller="Admin" asp-action="AuthorApplicationDetails" asp-route-id="@app.Id" class="btn btn-secondary btn-sm">View</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+
+        @* ============ REJECTED ============ *@
+        @if (rejected.Any())
+        {
+            <section class="panel-card large">
+                <div class="panel-header">
+                    <h3>Rejected applications</h3>
+                    <span class="info-pill">@rejected.Count declined</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Pen name</th>
+                            <th>Applicant</th>
+                            <th>Email</th>
+                            <th>Applied</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var app in rejected)
+                        {
+                            <tr>
+                                <td><strong>@app.PenName</strong></td>
+                                <td>@app.User?.FullName</td>
+                                <td class="text-muted">@app.User?.Email</td>
+                                <td>@app.AppliedAt.ToString("MMM d, yyyy")</td>
+                                <td>
+                                    <a asp-controller="Admin" asp-action="AuthorApplicationDetails" asp-route-id="@app.Id" class="btn btn-secondary btn-sm">View</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </section>
+        }
+    </main>
+</div>

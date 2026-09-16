@@ -1,0 +1,135 @@
+@model BookShelf.ViewModels.Orders.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        @if (Model.IsSubscription)
+        {
+            <a asp-controller="Subscription" asp-action="Index" class="text-link back-link">&larr; Back to plans</a>
+        }
+        else
+        {
+            <a asp-controller="Orders" asp-action="Cart" asp-route-id="@Model.OrderId" class="text-link back-link">&larr; Back to cart</a>
+        }
+
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Checkout</p>
+                <h1>@Model.Subtitle</h1>
+            </div>
+        </header>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary">
+                @TempData["Error"]
+            </div>
+        }
+
+        <div class="book-form-grid">
+            <div class="panel-card large no-margin">
+                <div class="panel-header">
+                    <h3>@Model.Title</h3>
+                </div>
+
+                <div class="approval-list">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="approval-row">
+                            <div class="approval-row-body">
+                                <span class="approval-row-title">@item.Title</span>
+                                <span class="approval-row-meta">Qty @item.Quantity &times; $@item.UnitPrice.ToString("F2")</span>
+                            </div>
+                            <strong>$@item.LineTotal.ToString("F2")</strong>
+                        </div>
+                    }
+                </div>
+
+                <form asp-controller="Orders" asp-action="Checkout" method="post" class="checkout-form">
+                    @Html.AntiForgeryToken()
+                    @if (Model.OrderId.HasValue)
+                    {
+                        <input type="hidden" name="orderId" value="@Model.OrderId.Value" />
+                    }
+                    @if (Model.PlanId.HasValue)
+                    {
+                        <input type="hidden" name="planId" value="@Model.PlanId.Value" />
+                    }
+
+                    <div class="field-group" style="margin-top:1.5rem">
+                        <label>Payment method</label>
+                        <div class="input-shell">
+                            <select name="paymentMethod">
+                                <option value="Card">Credit / debit card</option>
+                                <option value="Cash">Cash (pay at counter / pickup)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Card number</label>
+                            <div class="input-shell">
+                                <input type="text" placeholder="4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242" value="4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242" readonly />
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label>Expiry</label>
+                            <div class="input-shell">
+                                <input type="text" placeholder="12/28" value="12/28" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top:1rem; font-size:1rem; padding:0.8rem;">
+                        Pay $@Model.TotalAmount.ToString("F2") &rarr;
+                    </button>
+                    <p class="form-hint" style="text-align:center; margin-top:0.5rem;">
+                        Instant checkout activated. Clicking Pay completes your transaction immediately.
+                    </p>
+                </form>
+            </div>
+
+            <div class="panel-card no-margin order-summary-card">
+                <div class="panel-header">
+                    <h3>Summary</h3>
+                </div>
+                <div class="summary-row">
+                    <span>Items</span>
+                    <strong>@Model.Items.Sum(i => i.Quantity)</strong>
+                </div>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <strong>$@Model.Subtotal.ToString("F2")</strong>
+                </div>
+                @if (Model.DiscountPercent > 0)
+                {
+                    <div class="summary-row" style="color:var(--color-success-500)">
+                        <span>Subscriber Discount (@Model.DiscountPercent%)</span>
+                        <strong>-$@((Model.Subtotal * (Model.DiscountPercent / 100m)).ToString("F2"))</strong>
+                    </div>
+                }
+                <div class="summary-row">
+                    <span>Channel</span>
+                    <strong>@Model.Channel</strong>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.BranchName))
+                {
+                    <div class="summary-row">
+                        <span>Branch</span>
+                        <strong>@Model.BranchName</strong>
+                    </div>
+                }
+                <div class="summary-row summary-total">
+                    <span>Total due</span>
+                    <strong>$@Model.TotalAmount.ToString("F2")</strong>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

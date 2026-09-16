@@ -1,0 +1,89 @@
+@model BookShelf.Models.Order
+
+@{
+    ViewData["Title"] = "Your Cart";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Checkout</p>
+                <h1>Your cart</h1>
+            </div>
+        </header>
+
+        @if (!Model.OrderItems.Any())
+        {
+            <div class="empty-state">
+                <p>Your cart is empty.</p>
+                <a asp-controller="Books" asp-action="Index" class="btn btn-primary">Browse books</a>
+            </div>
+        }
+        else
+        {
+            <div class="book-form-grid">
+                <div class="panel-card large no-margin">
+                    <table class="data-table cart-table">
+                        <thead>
+                            <tr><th></th><th>Book</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                var slug = item.Book.Title.ToLower().Replace(" ", "-");
+                                <tr>
+                                    <td>
+                                        <div class="cart-thumb">
+                                            <img src="@(string.IsNullOrEmpty(item.Book.CoverImageUrl) ? $"https://picsum.photos/seed/{slug}/300/450" : item.Book.CoverImageUrl)" alt="@item.Book.Title" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="media-title">@item.Book.Title</span>
+                                    </td>
+                                    <td>$@item.UnitPrice.ToString("F2")</td>
+                                    <td>
+                                        <form asp-action="UpdateCartItem" method="post" class="qty-form">
+                                            <input type="hidden" name="orderId" value="@Model.Id" />
+                                            <input type="hidden" name="itemId" value="@item.Id" />
+                                            <div class="day-stepper">
+                                                <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-secondary btn-sm" @(item.Quantity <= 1 ? "disabled" : "")>&minus;</button>
+                                                <span class="qty-value">@item.Quantity</span>
+                                                <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-secondary btn-sm">+</button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                    <td><strong>$@((item.UnitPrice * item.Quantity).ToString("F2"))</strong></td>
+                                    <td>
+                                        <form asp-action="RemoveCartItem" method="post">
+                                            <input type="hidden" name="orderId" value="@Model.Id" />
+                                            <input type="hidden" name="itemId" value="@item.Id" />
+                                            <button type="submit" class="text-link cart-remove">Remove</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel-card no-margin order-summary-card">
+                    <div class="panel-header"><h3>Order summary</h3></div>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        @* TODO: pre-discount subtotal — Order currently only stores TotalAmount post-discount *@
+                        <strong>$@(Model.OrderItems.Sum(i => i.UnitPrice * i.Quantity).ToString("F2"))</strong>
+                    </div>
+                    @* TODO: @if (Model.TotalAmount < subtotal) show the applied subscription discount line *@
+                    <div class="summary-row summary-total">
+                        <span>Total</span>
+                        <strong>$@Model.TotalAmount.ToString("F2")</strong>
+                    </div>
+                    <a asp-action="Checkout" asp-route-id="@Model.Id" class="btn btn-primary btn-block">Proceed to checkout</a>
+                </div>
+            </div>
+        }
+    </main>
+</div>

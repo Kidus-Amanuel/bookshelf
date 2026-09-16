@@ -1,0 +1,45 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var userName = User.Identity?.Name ?? "Reader";
+}
+
+<aside class="dashboard-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-badge">B</div>
+        <div>
+            <div class="mini-label">Books &amp; stories</div>
+            <h2>BookShelf</h2>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Dashboard</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Home" && currentAction == "Customer" ? "active" : "")" asp-controller="Home" asp-action="Customer">Overview</a>
+            <a class="nav-item @(currentController == "Home" && currentAction == "MyActivity" ? "active" : "")" asp-controller="Home" asp-action="MyActivity">My activity</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Account &amp; Library</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Books" ? "active" : "")" asp-controller="Books" asp-action="Index">Browse books</a>
+            <a class="nav-item @(currentController == "Loans" ? "active" : "")" asp-controller="Loans" asp-action="MyLoans">My loans</a>
+            <a class="nav-item @(currentController == "Orders" && currentAction != "Cart" ? "active" : "")" asp-controller="Orders" asp-action="MyOrders">My orders</a>
+            <a class="nav-item @(currentController == "Orders" && currentAction == "Cart" ? "active" : "")" asp-controller="Orders" asp-action="Cart">My Cart</a>
+            <a class="nav-item @(currentController == "Subscription" || currentController == "Subscriptions" ? "active" : "")" asp-controller="Subscription" asp-action="Index">Subscription</a>
+            <a class="nav-item @(currentAction == "BecomeAuthor" ? "active" : "")" asp-controller="Account" asp-action="BecomeAuthor">Become an author</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="sidebar-user-name">@userName</div>
+        <div class="sidebar-user-role">Customer</div>
+        <form asp-controller="Account" asp-action="Logout" method="post" style="margin-top:0.75rem">
+            <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.15);padding:0.25rem 0.5rem;font-size:0.75rem;min-height:30px">
+                Sign out
+            </button>
+        </form>
+    </div>
+</aside>

@@ -1,0 +1,114 @@
+@model BookShelf.ViewModels.Customer.CustomerDashboardViewModel
+@{
+    ViewData["Title"] = "My Dashboard";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">My Dashboard</p>
+                <h1>Welcome back, @Model.CustomerName</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+
+        <!-- ===== DISCOVERY: Trending now ===== -->
+        <section class="shelf-section">
+            <div class="shelf-header">
+                <h3>Trending now</h3>
+                <a asp-controller="Books" asp-action="Index" class="text-link">See all</a>
+            </div>
+            <div class="media-row">
+                @if (!Model.TrendingBooks.Any())
+                {
+                    <p class="text-muted" style="padding:1rem;">No books currently available.</p>
+                }
+                else
+                {
+                    @foreach (var book in Model.TrendingBooks)
+                    {
+                        var coverImg = !string.IsNullOrEmpty(book.CoverImageUrl)
+                            ? book.CoverImageUrl
+                            : $"https://picsum.photos/seed/{book.Id}/300/450";
+
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="media-card">
+                            <div class="media-cover">
+                                <img src="@coverImg" alt="@book.Title cover" loading="lazy" />
+                                <span class="media-badge badge-trending">Trending</span>
+                            </div>
+                            <div class="media-info">
+                                <span class="media-title">@book.Title</span>
+                                <span class="media-meta">@(book.AuthorProfile?.PenName ?? "BookShelf Author") &middot; $@(book.Price?.ToString("F2") ?? "0.00")</span>
+                            </div>
+                        </a>
+                    }
+                }
+            </div>
+        </section>
+
+        <!-- ===== DISCOVERY: New releases ===== -->
+        <section class="shelf-section">
+            <div class="shelf-header">
+                <h3>New releases</h3>
+                <a asp-controller="Books" asp-action="Index" class="text-link">See all</a>
+            </div>
+            <div class="media-row">
+                @if (!Model.NewReleases.Any())
+                {
+                    <p class="text-muted" style="padding:1rem;">No new releases yet.</p>
+                }
+                else
+                {
+                    @foreach (var book in Model.NewReleases)
+                    {
+                        var coverImg = !string.IsNullOrEmpty(book.CoverImageUrl)
+                            ? book.CoverImageUrl
+                            : $"https://picsum.photos/seed/release-{book.Id}/300/450";
+
+                        <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="media-card">
+                            <div class="media-cover">
+                                <img src="@coverImg" alt="@book.Title cover" loading="lazy" />
+                                <span class="media-badge badge-new">New</span>
+                            </div>
+                            <div class="media-info">
+                                <span class="media-title">@book.Title</span>
+                                <span class="media-meta">@(book.AuthorProfile?.PenName ?? "BookShelf Author") &middot; $@(book.Price?.ToString("F2") ?? "0.00")</span>
+                            </div>
+                        </a>
+                    }
+                }
+            </div>
+        </section>
+
+        <!-- ===== GLANCE STRIP ===== -->
+        <section class="glance-strip">
+            <div class="glance-item">
+                <span class="glance-value">@Model.ActiveLoansCount</span>
+                <span class="glance-label">active loans</span>
+            </div>
+            <div class="glance-item">
+                <span class="glance-value">$@Model.FinesOwed.ToString("F2")</span>
+                <span class="glance-label">fines owed</span>
+            </div>
+            <div class="glance-item">
+                <span class="glance-value">@Model.PlanName</span>
+                <span class="glance-label">
+                    @(Model.DaysRemaining > 0 ? $"renews in {Model.DaysRemaining} days" : (Model.Subscription != null ? "active" : "not subscribed"))
+                </span>
+            </div>
+            <a asp-controller="Home" asp-action="MyActivity" class="glance-link">View full activity &rarr;</a>
+        </section>
+    </main>
+</div>

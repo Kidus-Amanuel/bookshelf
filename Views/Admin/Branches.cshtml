@@ -1,0 +1,107 @@
+@model List<BookShelf.Models.Branch>
+@{
+    ViewData["Title"] = "Branches";
+    var activeStaff = Model.Sum(b => b.Staff?.Count(s => s.IsActive) ?? 0);
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Operations</p>
+                <h1>Branches</h1>
+            </div>
+            <div style="display:flex; gap:.75rem; align-items:center;">
+                <a asp-controller="Admin" asp-action="CreateBranch" class="btn btn-primary">Add branch</a>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-secondary">Sign out</button>
+                </form>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Total branches</span>
+                <strong class="stat-card-value">@Model.Count</strong>
+                <small class="stat-card-meta">across the network</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Active staff</span>
+                <strong class="stat-card-value">@activeStaff</strong>
+                <small class="stat-card-meta">assigned to branches</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Inactive staff</span>
+                <strong class="stat-card-value">@(Model.Sum(b => b.Staff?.Count(s => !s.IsActive) ?? 0))</strong>
+                <small class="stat-card-meta">disabled</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">All branches have phone</span>
+                <strong class="stat-card-value">@Model.Count(b => !string.IsNullOrWhiteSpace(b.Phone)) / @Model.Count</strong>
+                <small class="stat-card-meta">contactable</small>
+            </div>
+        </section>
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>All branches</h3>
+                <span class="info-pill">@Model.Count total</span>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div style="padding: 1.5rem;">
+                    <p class="text-muted" style="margin-bottom: 1rem;">No branches yet. Add your first branch to start processing local orders and loans.</p>
+                    <a asp-controller="Admin" asp-action="CreateBranch" class="btn btn-primary btn-sm">Add branch</a>
+                </div>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Phone</th>
+                            <th>Staff</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var branch in Model.OrderBy(b => b.Name))
+                        {
+                            var active = branch.Staff?.Count(s => s.IsActive) ?? 0;
+                            var total = branch.Staff?.Count ?? 0;
+                            <tr>
+                                <td><strong>@branch.Name</strong></td>
+                                <td>@(string.IsNullOrWhiteSpace(branch.Address) ? "—" : branch.Address)</td>
+                                <td>@(string.IsNullOrWhiteSpace(branch.Phone) ? "—" : branch.Phone)</td>
+                                <td>
+                                    <span class="badge @(active > 0 ? "badge-approved" : "badge-neutral")">
+                                        @active active / @total total
+                                    </span>
+                                </td>
+                                <td class="text-muted">@branch.CreatedAt.ToString("MMM d, yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</div>

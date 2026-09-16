@@ -1,19 +1,102 @@
 @model BookShelf.ViewModels.Loans.LoanViewModel
 
 @{
-    ViewData["Title"] = "Borrow Book";
+    ViewData["Title"] = "Borrow a Book";
 }
 
-<h2>Borrow Book</h2>
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
 
-<form asp-action="Borrow" method="post">
-    <div>
-        <label asp-for="BookId">Book Id</label>
-        <input asp-for="BookId" type="number" />
-    </div>
-    <div>
-        <label asp-for="UserId">User Id</label>
-        <input asp-for="UserId" type="number" />
-    </div>
-    <button type="submit">Borrow</button>
-</form>
+    <main class="dashboard-main">
+        <a asp-controller="Books" asp-action="Details" asp-route-id="@Model.BookId" class="text-link back-link">&larr; Back to book</a>
+
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Borrow</p>
+                <h1>@Model.BookTitle</h1>
+            </div>
+        </header>
+
+        <div class="book-form-grid">
+            <div class="panel-card large no-margin">
+                <form asp-action="Borrow" method="post" id="borrowForm">
+                    @* Never trust these on the server — re-derive BookId/UserId from the authenticated
+                       session and the original route param, not from posted form values. *@
+                    <input type="hidden" asp-for="BookId" />
+                    <input type="hidden" asp-for="UserId" />
+
+                    <div class="field-group">
+                        <label asp-for="Days">Loan duration</label>
+                        <div class="day-stepper">
+                            <button type="button" class="btn btn-secondary btn-sm" id="dayMinus">&minus;</button>
+                            <input asp-for="Days" type="number" min="1" max="30" id="dayInput" readonly />
+                            <button type="button" class="btn btn-secondary btn-sm" id="dayPlus">+</button>
+                            <span class="stat-card-meta">days</span>
+                        </div>
+                    </div>
+
+                    <div class="plan-detail" style="margin-top:1.5rem">
+                        <div>
+                            <span class="plan-detail-label">Price per day</span>
+                            <strong>$@Model.PricePerDay.ToString("F2")</strong>
+                        </div>
+                        <div>
+                            <span class="plan-detail-label">Due date</span>
+                            <strong id="dueDateOut">—</strong>
+                        </div>
+                        <div>
+                            <span class="plan-detail-label">Total</span>
+                            <strong id="totalOut">$@((Model.PricePerDay * Model.Days).ToString("F2"))</strong>
+                        </div>
+                    </div>
+
+                    <div class="penalty-notice">
+                        <strong>Late return fee:</strong> $@Model.PenaltyPerDay.ToString("F2")/day after the due date.
+                        Return it on time and you won't be charged anything extra.
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="margin-top:1.5rem">Confirm borrow</button>
+                </form>
+            </div>
+
+            <div class="book-form-preview">
+                <span class="mini-label">You're borrowing</span>
+                <div class="media-cover preview-cover">
+                    <img src="@(string.IsNullOrEmpty(Model.CoverImageUrl) ? "https://picsum.photos/seed/borrow/300/450" : Model.CoverImageUrl)" alt="@Model.BookTitle cover" />
+                </div>
+                <div class="media-info">
+                    <span class="media-title">@Model.BookTitle</span>
+                    <span class="media-meta">@Model.AuthorName</span>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    (function () {
+        var pricePerDay = @Model.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var dayInput = document.getElementById('dayInput');
+        var totalOut = document.getElementById('totalOut');
+        var dueDateOut = document.getElementById('dueDateOut');
+
+        function recalc() {
+            var days = parseInt(dayInput.value, 10) || 1;
+            totalOut.textContent = '$' + (pricePerDay * days).toFixed(2);
+            var due = new Date();
+            due.setDate(due.getDate() + days);
+            dueDateOut.textContent = due.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        document.getElementById('dayMinus').addEventListener('click', function () {
+            dayInput.value = Math.max(1, parseInt(dayInput.value, 10) - 1);
+            recalc();
+        });
+        document.getElementById('dayPlus').addEventListener('click', function () {
+            dayInput.value = Math.min(30, parseInt(dayInput.value, 10) + 1);
+            recalc();
+        });
+
+        recalc();
+    })();
+</script>

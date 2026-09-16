@@ -20,73 +20,205 @@ build_property.TargetFrameworkVersion = v10.0
 build_property.EntryPointFilePath = 
 build_property.RootNamespace = BookShelf
 build_property.RootNamespace = BookShelf
-build_property.ProjectDir = C:\Users\kidusam\Desktop\dev\BookShelf\
+build_property.ProjectDir = C:\Users\kidusam\Desktop\dev\bookshelf\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\kidusam\Desktop\dev\BookShelf
+build_property.MSBuildProjectDirectory = C:\Users\kidusam\Desktop\dev\bookshelf
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Account/EmailConfirmation.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Account/EmailConfirmation.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxFbWFpbENvbmZpcm1hdGlvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Account/ForgotPassword.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Account/ForgotPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxGb3Jnb3RQYXNzd29yZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Account/Login.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Account/Register.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Books/Create.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Admin/Branches.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQnJhbmNoZXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Admin/CreateBranch.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlQnJhbmNoLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Admin/InviteAdmin.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW52aXRlQWRtaW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Admin/LoansReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTG9hbnNSZXBvcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Admin/OrdersReport.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cT3JkZXJzUmVwb3J0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Author/AddBook.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yXEFkZEJvb2suY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Author/EditProfile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yXEVkaXRQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Author/MyBooks.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yXE15Qm9va3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Author/Sales.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aG9yXFNhbGVzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Books/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va3NcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Books/Details.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Books/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va3NcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Books/Index.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Books/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQm9va3NcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Home/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Branches/Addbranch.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnJhbmNoZXNcQWRkYnJhbmNoLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Loans/Borrow.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Branches/detail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnJhbmNoZXNcZGV0YWlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Branches/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnJhbmNoZXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Admin/Authorapplications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pblxBdXRob3JhcHBsaWNhdGlvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Admin/Authorapplicationsform.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pblxBdXRob3JhcHBsaWNhdGlvbnNmb3JtLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Admin/Bookapprovals.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pblxCb29rYXBwcm92YWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Admin/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pblxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Admin/Members.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBZG1pblxNZW1iZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Author/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBdXRob3JcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Customer/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDdXN0b21lclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Customer/MyActivity.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDdXN0b21lclxNeUFjdGl2aXR5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Home/Shared/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTaGFyZWRcUHJvZmlsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Loans/Borrow.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcQm9ycm93LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Loans/Index.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Loans/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Shared/_AuthVisual.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Loans/MyLoans.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcTXlMb2Fucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Onboarding/Author/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT25ib2FyZGluZ1xBdXRob3JcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Onboarding/Customer/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT25ib2FyZGluZ1xDdXN0b21lclxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Orders/Cart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXENhcnQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Orders/Checkout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXENoZWNrb3V0LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Orders/Confirmation.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXENvbmZpcm1hdGlvbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Orders/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXERldGFpbHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Orders/index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXGluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Orders/MyOrders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcT3JkZXJzXE15T3JkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Shared/_AdminSidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BZG1pblNpZGViYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Shared/_AuthorSidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BdXRob3JTaWRlYmFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Shared/_AuthVisual.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BdXRoVmlzdWFsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Shared/_Layout.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Shared/_CustomerSidebar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9DdXN0b21lclNpZGViYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/_ViewImports.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/Subscription/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3Vic2NyaXB0aW9uXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/kidusam/Desktop/dev/BookShelf/Views/_ViewStart.cshtml]
+[C:/Users/kidusam/Desktop/dev/bookshelf/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "717kYfKNuO8=",
+  "dgSpecHash": "rzDFbFvPzk0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\kidusam\\Desktop\\dev\\BookShelf\\BookShelf.csproj",
+  "projectFilePath": "C:\\Users\\kidusam\\Desktop\\dev\\bookshelf\\BookShelf.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kidusam\\.nuget\\packages\\azure.core\\1.50.0\\azure.core.1.50.0.nupkg.sha512",
     "C:\\Users\\kidusam\\.nuget\\packages\\azure.identity\\1.17.1\\azure.identity.1.17.1.nupkg.sha512",

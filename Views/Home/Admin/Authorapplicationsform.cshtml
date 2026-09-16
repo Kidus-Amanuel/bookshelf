@@ -1,0 +1,188 @@
+@model BookShelf.Models.AuthorProfile
+@{
+    ViewData["Title"] = $"Review {Model.PenName}";
+    var statusBadge = Model.Status switch
+    {
+        "Approved" => "badge-approved",
+        "Pending" => "badge-pending",
+        "Rejected" => "badge-rejected",
+        "Suspended" => "badge-rejected",
+        _ => "badge-neutral"
+    };
+    var applicant = Model.User;
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Author applications</p>
+                <h1>@Model.PenName</h1>
+            </div>
+            <div style="display:flex; gap:.75rem; align-items:center;">
+                <span class="badge @statusBadge">Status: @Model.Status</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-secondary">Sign out</button>
+                </form>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="dashboard-panels">
+            @* ============ APPLICANT INFO ============ *@
+            <div class="panel-card large">
+                <div class="panel-header">
+                    <h3>Applicant details</h3>
+                    <a asp-controller="Admin" asp-action="AuthorApplications" class="btn btn-secondary btn-sm">← Back to list</a>
+                </div>
+
+                <div style="padding: 1rem 1.25rem;">
+                    <div class="form-grid-2">
+                        <div>
+                            <div class="kv">
+                                <span class="kv-label">Full name</span>
+                                <span class="kv-value">@applicant?.FullName</span>
+                            </div>
+                            <div class="kv">
+                                <span class="kv-label">Email</span>
+                                <span class="kv-value">@applicant?.Email</span>
+                            </div>
+                            <div class="kv">
+                                <span class="kv-label">Pen name</span>
+                                <span class="kv-value">@Model.PenName</span>
+                            </div>
+                            <div class="kv">
+                                <span class="kv-label">Role</span>
+                                <span class="kv-value">@(applicant?.Role?.Name ?? "Customer")</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="kv">
+                                <span class="kv-label">Applied on</span>
+                                <span class="kv-value">@Model.AppliedAt.ToString("MMM d, yyyy 'at' h:mm tt")</span>
+                            </div>
+                            @if (Model.ApprovedAt.HasValue)
+                            {
+                                <div class="kv">
+                                    <span class="kv-label">@(Model.Status == "Rejected" ? "Decided on" : "Approved on")</span>
+                                    <span class="kv-value">@Model.ApprovedAt.Value.ToString("MMM d, yyyy 'at' h:mm tt")</span>
+                                </div>
+                                <div class="kv">
+                                    <span class="kv-label">@(Model.Status == "Rejected" ? "Rejected by" : "Approved by")</span>
+                                    <span class="kv-value">@(Model.ApprovedByAdmin?.FullName ?? "—")</span>
+                                </div>
+                            }
+                            <div class="kv">
+                                <span class="kv-label">Books submitted</span>
+                                <span class="kv-value">@(Model.Books?.Count ?? 0)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <div class="kv">
+                            <span class="kv-label">Biography</span>
+                            <p class="kv-bio">@Model.Bio</p>
+                        </div>
+                    </div>
+                </div>
+
+                @if (Model.Status == "Pending")
+                {
+                    <div style="display:flex; gap:.75rem; padding: 0 1.25rem 1.25rem;">
+                        <form asp-controller="Admin" asp-action="ApproveAuthor" asp-route-id="@Model.Id" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-primary">Approve application</button>
+                        </form>
+                        <form asp-controller="Admin" asp-action="RejectAuthor" asp-route-id="@Model.Id" method="post" style="margin:0;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-secondary"
+                                    onclick="return confirm('Reject this application? The applicant will not be able to publish books.');">
+                                Reject application
+                            </button>
+                        </form>
+                    </div>
+                }
+                else
+                {
+                    <div style="display:flex; gap:.75rem; padding: 0 1.25rem 1.25rem;">
+                        @if (Model.Status == "Approved")
+                        {
+                            <a asp-controller="Admin" asp-action="Users" class="btn btn-secondary btn-sm">View member profile</a>
+                        }
+                        @if (Model.Status == "Rejected")
+                        {
+                            <form asp-controller="Admin" asp-action="ApproveAuthor" asp-route-id="@Model.Id" method="post" style="margin:0;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-primary">Re-approve application</button>
+                            </form>
+                        }
+                        @if (Model.Status != "Pending")
+                        {
+                            <a asp-controller="Admin" asp-action="AuthorApplications" class="btn btn-secondary btn-sm">Back to list</a>
+                        }
+                    </div>
+                }
+            </div>
+
+            @* ============ SUBMITTED BOOKS ============ *@
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3>Submitted books</h3>
+                    <span class="info-pill">@(Model.Books?.Count ?? 0)</span>
+                </div>
+
+                @if (Model.Books == null || !Model.Books.Any())
+                {
+                    <p class="text-muted" style="padding:1rem;">No books submitted yet.</p>
+                }
+                else
+                {
+                    <div class="approval-list">
+                        @foreach (var book in Model.Books.OrderByDescending(b => b.CreatedAt))
+                        {
+                            var badgeClass = book.Status switch
+                            {
+                                "Approved" => "badge-approved",
+                                "Pending" => "badge-pending",
+                                "Rejected" => "badge-rejected",
+                                "Delisted" => "badge-delisted",
+                                _ => "badge-neutral"
+                            };
+                            <div class="approval-row">
+                                <div class="approval-row-body">
+                                    <span class="approval-row-title">@book.Title</span>
+                                    <span class="approval-row-meta">@book.CreatedAt.ToString("MMM d, yyyy") &middot; ISBN @book.ISBN</span>
+                                </div>
+                                <span class="badge @badgeClass">@book.Status</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.5rem; }
+    @@media (max-width: 700px) { .form-grid-2 { grid-template-columns:1fr; } }
+    .kv { display:flex; flex-direction:column; margin-bottom:.75rem; }
+    .kv-label { font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; color:#6b7280; margin-bottom:.15rem; }
+    .kv-value { font-size:.95rem; font-weight:500; color:#1f2937; }
+    .kv-bio { background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:.75rem 1rem; margin:.25rem 0 0; white-space:pre-wrap; line-height:1.5; }
+</style>

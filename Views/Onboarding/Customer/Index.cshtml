@@ -1,0 +1,76 @@
+@model BookShelf.ViewModels.Customer.CustomerOnboardingViewModel
+@{
+    ViewData["Title"] = "Welcome to BookShelf";
+}
+
+<div class="onboarding-body">
+    <div class="onboarding-shell">
+        <div class="brand-row" style="justify-content: center; margin-bottom: 1rem;">
+            <div class="brand-badge">B</div>
+            <div>
+                <div class="mini-label">Books &amp; stories</div>
+                <h2 style="margin:0">BookShelf</h2>
+            </div>
+        </div>
+
+        <div class="onboarding-heading">
+            <h1 style="font-size: 2.2rem; margin-bottom: 0.5rem;">Welcome, @Model.CustomerName</h1>
+            <p class="onboarding-subtext">Choose how you would like to explore. Start free or unlock premium member benefits.</p>
+        </div>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary">@TempData["Error"]</div>
+        }
+
+        <!-- 30-Day Free Trial Card -->
+        @if (Model.FreeTrialPlan != null)
+        {
+            <div class="trial-card">
+                <div class="trial-card-info">
+                    <span class="pill pill-success" style="font-size: 0.75rem;">Free for 30 days</span>
+                    <h3>Start your Free Trial</h3>
+                    <p>Borrow up to @Model.FreeTrialPlan.MaxActiveLoans books concurrently with zero commitment. Cancel or upgrade anytime.</p>
+                </div>
+                <form asp-controller="Subscription" asp-action="StartTrial" method="post">
+                    <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+                        Start Free Trial &rarr;
+                    </button>
+                </form>
+            </div>
+        }
+
+        <div class="onboarding-divider">or choose a reading membership</div>
+
+        <!-- Plan Grid -->
+        <div class="plan-grid">
+            @foreach (var plan in Model.AvailablePlans)
+            {
+                var isFeatured = plan.Name == "Reader Plus";
+                <div class="plan-card @(isFeatured ? "plan-card-featured" : "")">
+                    @if (isFeatured)
+                    {
+                        <span class="plan-badge">Most Popular</span>
+                    }
+                    <span class="plan-name" style="font-size: 1.1rem;">@plan.Name</span>
+                    <div class="plan-price">
+                        <strong>$@plan.Price.ToString("F2")</strong>
+                        <span>/ @plan.DurationInDays days</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Up to @plan.MaxActiveLoans active loans</li>
+                        <li>@plan.DiscountPercentOnPurchases% off all book purchases</li>
+                        <li>Priority store pickup</li>
+                    </ul>
+                    <a asp-controller="Orders" asp-action="Checkout" asp-route-planId="@plan.Id" class="btn @(isFeatured ? "btn-primary" : "btn-secondary") btn-block" style="margin-top: auto;">
+                        Choose @plan.Name
+                    </a>
+                </div>
+            }
+        </div>
+
+        <a asp-controller="Home" asp-action="Customer" class="onboarding-skip text-link">
+            Skip for now and explore the catalog &rarr;
+        </a>
+    </div>
+</div>

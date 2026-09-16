@@ -1,6 +1,69 @@
+@model BookShelf.Models.Book
+
 @{
-    ViewData["Title"] = "Book Details";
+    ViewData["Title"] = Model.Title;
+    var slug = Model.Title.ToLower().Replace(" ", "-");
+    var coverSrc = string.IsNullOrEmpty(Model.CoverImageUrl) ? $"https://picsum.photos/seed/{slug}/300/450" : Model.CoverImageUrl;
 }
 
-<h2>Book Details</h2>
-<p>Details screen placeholder.</p>
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <a asp-controller="Books" asp-action="Index" class="text-link back-link">&larr; Back to catalog</a>
+
+        <section class="book-hero">
+            <div class="book-hero-cover">
+                <img src="@coverSrc" alt="@Model.Title cover" />
+            </div>
+
+            <div class="book-hero-info">
+                <span class="eyebrow">@(Model.AuthorProfile?.PenName ?? "Unknown author")</span>
+                <h1>@Model.Title</h1>
+
+                <div class="book-tags">
+                    @if (Model.IsForSale) { <span class="tag">For sale</span> }
+                    @if (Model.IsForLoan) { <span class="tag">For loan</span> }
+                    @* TODO: @if (User.IsInRole("Admin") || User.IsInRole("Author")) *@
+                    <span class="badge badge-@(Model.Status.ToLower())">@Model.Status</span>
+                </div>
+
+                <p class="book-description">@Model.Description</p>
+
+                <div class="book-hero-stats">
+                    <div>
+                        <span class="stat-card-label">Price</span>
+                        <strong>@(Model.Price.HasValue ? "$" + Model.Price.Value.ToString("F2") : "Loan only")</strong>
+                    </div>
+                    <div>
+                        <span class="stat-card-label">Copies for sale</span>
+                        <strong>@Model.StockForSale</strong>
+                    </div>
+                    <div>
+                        <span class="stat-card-label">Copies for loan</span>
+                        <strong>@Model.StockForLoan</strong>
+                    </div>
+                    <div>
+                        <span class="stat-card-label">ISBN</span>
+                        <strong>@Model.ISBN</strong>
+                    </div>
+                </div>
+
+                <div class="book-hero-actions">
+                    @if (Model.IsForSale && Model.StockForSale > 0)
+                    {
+                        <a asp-controller="Orders" asp-action="Create" asp-route-bookId="@Model.Id" class="btn btn-primary">Buy now</a>
+                    }
+                    @if (Model.IsForLoan && Model.StockForLoan > 0)
+                    {
+                        <a asp-controller="Loans" asp-action="Borrow" asp-route-bookId="@Model.Id" class="btn btn-secondary">Borrow</a>
+                    }
+                    @if ((Model.IsForSale && Model.StockForSale == 0) || (Model.IsForLoan && Model.StockForLoan == 0))
+                    {
+                        <span class="stock-warning">Currently out of stock for this option</span>
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
+</div>

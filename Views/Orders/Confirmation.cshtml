@@ -1,0 +1,38 @@
+@model BookShelf.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmed";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <div class="confirmation-hero">
+            <div class="confirmation-check">&check;</div>
+            <h1>Order confirmed</h1>
+            <p class="stat-card-meta">Order #@Model.Id &middot; $@Model.TotalAmount.ToString("F2") paid</p>
+        </div>
+
+        <div class="panel-card large">
+            <div class="panel-header"><h3>What you got</h3></div>
+            <div class="approval-list">
+                @foreach (var item in Model.OrderItems)
+                {
+                    <div class="approval-row">
+                        <div class="approval-row-body">
+                            <span class="approval-row-title">@item.Book.Title</span>
+                            <span class="approval-row-meta">Qty @item.Quantity</span>
+                        </div>
+                        <strong>$@((item.UnitPrice * item.Quantity).ToString("F2"))</strong>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="confirmation-actions">
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">View order details</a>
+            <a asp-controller="Books" asp-action="Index" class="btn btn-primary">Keep browsing</a>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,84 @@
+@model BookShelf.ViewModels.Authors.EditAuthorProfileViewModel
+@{
+    ViewData["Title"] = "Edit Author Profile";
+    var status = ViewData["Status"] as string ?? "Approved";
+    var statusBadge = status switch
+    {
+        "Approved" => "badge-approved",
+        "Pending" => "badge-pending",
+        "Rejected" => "badge-rejected",
+        "Suspended" => "badge-rejected",
+        _ => "badge-neutral"
+    };
+}
+
+<div class="dashboard-shell">
+    <partial name="_AuthorSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Authoring</p>
+                <h1>Edit author profile</h1>
+            </div>
+            <div style="display:flex; gap:.75rem; align-items:center;">
+                <span class="badge @statusBadge">Status: @status</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-secondary">Sign out</button>
+                </form>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>Your public profile</h3>
+                <span class="panel-header-meta">Visible on every book page in the catalog</span>
+            </div>
+
+            <div style="padding: 0 1rem 1.25rem;">
+                <form asp-controller="Author" asp-action="EditProfile" method="post">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <div class="form-row">
+                        <label asp-for="PenName">Pen name</label>
+                        <input asp-for="PenName" class="form-control" placeholder="Carol Mystery" />
+                        <span asp-validation-for="PenName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <label asp-for="Bio">Biography</label>
+                        <textarea asp-for="Bio" class="form-control" rows="6" placeholder="Tell readers who you are and what you write."></textarea>
+                        <span asp-validation-for="Bio" class="text-danger"></span>
+                    </div>
+
+                    <div style="display:flex; gap:.75rem; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <a asp-controller="Home" asp-action="Author" class="btn btn-secondary">Back to overview</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    .form-row { display:flex; flex-direction:column; gap:.4rem; margin-bottom: 1rem; }
+    .form-row label { font-weight:600; font-size:.9rem; color:var(--text,#1f2937); }
+    .form-control { padding:.6rem .8rem; border:1px solid var(--border,#d4d4d8); border-radius:8px; font-size:.95rem; background:#fff; color:inherit; }
+    .form-control:focus { outline:none; border-color:var(--accent,#2563eb); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+    .text-danger { color:#b91c1c; font-size:.8rem; }
+    .validation-summary { background:#fee2e2; color:#991b1b; padding:.75rem 1rem; border-radius:8px; margin-bottom:1rem; }
+</style>

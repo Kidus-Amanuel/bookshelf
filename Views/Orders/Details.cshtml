@@ -1,0 +1,80 @@
+@model BookShelf.Models.Order
+
+@{
+    ViewData["Title"] = $"Order #{Model.Id}";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <a asp-action="MyOrders" class="text-link back-link">&larr; Back to orders</a>
+
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Order</p>
+                <h1>Order #@Model.Id</h1>
+            </div>
+            <span class="badge badge-@(Model.Status.ToLower())">@Model.Status</span>
+        </header>
+
+        <div class="book-form-grid">
+            <div class="panel-card large no-margin">
+                <div class="panel-header"><h3>Items</h3></div>
+                <table class="data-table">
+                    <thead><tr><th></th><th>Book</th><th>Qty</th><th>Unit price</th><th>Subtotal</th></tr></thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderItems)
+                        {
+                            var slug = item.Book.Title.ToLower().Replace(" ", "-");
+                            <tr>
+                                <td>
+                                    <div class="cart-thumb">
+                                        <img src="@(string.IsNullOrEmpty(item.Book.CoverImageUrl) ? $"https://picsum.photos/seed/{slug}/300/450" : item.Book.CoverImageUrl)" alt="@item.Book.Title" />
+                                    </div>
+                                </td>
+                                <td>@item.Book.Title</td>
+                                <td>@item.Quantity</td>
+                                <td>$@item.UnitPrice.ToString("F2")</td>
+                                <td><strong>$@((item.UnitPrice * item.Quantity).ToString("F2"))</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                @* TODO: only for Admin — status override control *@
+                <form asp-action="UpdateStatus" method="post" class="status-update-form">
+                    <input type="hidden" name="orderId" value="@Model.Id" />
+                    <div class="input-shell">
+                        <select name="status">
+                            <option>Pending</option>
+                            <option>Paid</option>
+                            <option>Shipped</option>
+                            <option>Cancelled</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-secondary btn-sm">Update status</button>
+                </form>
+            </div>
+
+            <div class="panel-card no-margin order-summary-card">
+                <div class="panel-header"><h3>Details</h3></div>
+                <div class="plan-detail" style="grid-template-columns:1fr">
+                    <div><span class="plan-detail-label">Placed by</span><strong>@Model.User.FullName</strong></div>
+                    <div><span class="plan-detail-label">Date</span><strong>@Model.CreatedAt.ToShortDateString()</strong></div>
+                    <div><span class="plan-detail-label">Channel</span><strong>@Model.Channel</strong></div>
+                    @if (Model.Branch != null)
+                    {
+                        <div><span class="plan-detail-label">Branch</span><strong>@Model.Branch.Name</strong></div>
+                    }
+                    @if (Model.Payment != null)
+                    {
+                        <div><span class="plan-detail-label">Payment</span><strong>@Model.Payment.PaymentMethod &middot; @Model.Payment.Status</strong></div>
+                        <div><span class="plan-detail-label">Paid at</span><strong>@Model.Payment.PaidAt.ToShortDateString()</strong></div>
+                    }
+                    <div class="summary-row summary-total"><span>Total</span><strong>$@Model.TotalAmount.ToString("F2")</strong></div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

@@ -1,0 +1,140 @@
+@model BookShelf.ViewModels.Subscriptions.SubscriptionsViewModel
+
+@{
+    ViewData["Title"] = "Subscription";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Account</p>
+                <h1>Your subscription</h1>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary">
+                @TempData["Error"]
+            </div>
+        }
+
+        @if (Model.Current?.Status == "Trial")
+        {
+            <div class="trial-banner">
+                <span><strong>@Model.DaysRemaining days left</strong> on your free trial.</span>
+                <a href="#plans" class="btn btn-primary btn-sm">Upgrade now</a>
+            </div>
+        }
+
+        <div class="panel-card large">
+            <div class="panel-header">
+                <h3>Current plan</h3>
+                @if (Model.Current != null)
+                {
+                    <span class="badge badge-@(Model.Current.Status.ToLower())">@Model.Current.Status</span>
+                }
+            </div>
+
+            @if (Model.Current == null)
+            {
+                <p class="stat-card-meta">You don't have an active plan. Choose one below.</p>
+            }
+            else
+            {
+                <div class="plan-detail">
+                    <div>
+                        <span class="plan-detail-label">Plan</span>
+                        <strong>@Model.Current.Plan.Name</strong>
+                    </div>
+                    <div>
+                        <span class="plan-detail-label">Loans used</span>
+                        <strong>@Model.ActiveLoans / @Model.Current.Plan.MaxActiveLoans</strong>
+                    </div>
+                    <div>
+                        <span class="plan-detail-label">Purchase discount</span>
+                        <strong>@Model.Current.Plan.DiscountPercentOnPurchases%</strong>
+                    </div>
+                    <div>
+                        <span class="plan-detail-label">
+                            @(Model.Current.Status == "Trial" ? "Trial ends" : "Renews")
+                        </span>
+                        <strong>
+                            @Model.Current.EndDate.ToShortDateString()
+                            @(Model.Current.Status != "Trial" ? (Model.Current.AutoRenew ? " · auto-renew on" : " · auto-renew off") : "")
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="loan-usage-bar">
+                    <div class="progress-bar">
+                        <span style="width:@(Model.Current.Plan.MaxActiveLoans > 0 ? (Model.ActiveLoans * 100 / Model.Current.Plan.MaxActiveLoans) : 0)%"></span>
+                    </div>
+                </div>
+
+                @if (Model.Current.Status != "Trial")
+                {
+                    <form asp-controller="Subscription" asp-action="ToggleAutoRenew" method="post" style="margin-top:1rem">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-secondary btn-sm">
+                            Turn auto-renew @(Model.Current.AutoRenew ? "off" : "on")
+                        </button>
+                    </form>
+                }
+            }
+        </div>
+
+        <section id="plans" class="dashboard-topbar" style="margin-top:2rem">
+            <div>
+                <h3 style="margin:0">@(Model.Current == null ? "Choose a plan" : "Change your plan")</h3>
+            </div>
+        </section>
+
+        <div class="plan-grid">
+            @foreach (var plan in Model.AvailablePlans)
+            {
+                var isCurrent = Model.Current?.PlanId == plan.Id && Model.Current.Status != "Trial";
+                <div class="plan-card @(plan.Name == "Reader Plus" ? "plan-card-featured" : "")">
+                    @if (isCurrent)
+                    {
+                        <span class="plan-badge" style="background:#111">Current plan</span>
+                    }
+                    <span class="plan-name">@plan.Name</span>
+                    <div class="plan-price">
+                        <strong>$@plan.Price.ToString("F2")</strong>
+                        <span>/ @plan.DurationInDays days</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>Up to @plan.MaxActiveLoans active loans</li>
+                        <li>@plan.DiscountPercentOnPurchases% off every purchase</li>
+                    </ul>
+                    @if (!isCurrent)
+                    {
+                        <a asp-controller="Orders" asp-action="Checkout" asp-route-planId="@plan.Id" class="btn @(plan.Name == "Reader Plus" ? "btn-primary" : "btn-secondary") btn-block" style="margin-top:auto;">
+                            Switch to @plan.Name
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+
+        @if (Model.Current != null && Model.Current.Status == "Active")
+        {
+            <form asp-controller="Subscription" asp-action="Cancel" method="post" style="margin-top:1.5rem">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="text-link" style="color:#991b1b; background:none; border:none; cursor:pointer; padding:0;">
+                    Cancel subscription
+                </button>
+            </form>
+        }
+    </main>
+</div>

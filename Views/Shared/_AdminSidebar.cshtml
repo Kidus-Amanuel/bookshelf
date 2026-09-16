@@ -1,0 +1,57 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var adminDisplay = User.Identity?.Name ?? "Administrator";
+}
+
+<aside class="dashboard-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-badge">B</div>
+        <div>
+            <div class="mini-label">Library</div>
+            <h2>BookShelf</h2>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Dashboard</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Home" && currentAction == "Admin" ? "active" : "")" asp-controller="Home" asp-action="Admin">Overview</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Approvals</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Admin" && currentAction == "PendingBooks" ? "active" : "")" asp-controller="Admin" asp-action="PendingBooks">Book approvals</a>
+            <a class="nav-item @(currentController == "Admin" && currentAction == "AuthorApplications" ? "active" : "")" asp-controller="Admin" asp-action="AuthorApplications">Author applications</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Operations</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Admin" && currentAction == "Users" ? "active" : "")" asp-controller="Admin" asp-action="Users">Members</a>
+            <a class="nav-item @(currentController == "Admin" && currentAction == "Branches" ? "active" : "")" asp-controller="Admin" asp-action="Branches">Branches</a>
+            <a class="nav-item @(currentController == "Admin" && currentAction == "InviteAdmin" ? "active" : "")" asp-controller="Admin" asp-action="InviteAdmin">Admin invites</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Reports</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Admin" && currentAction == "OrdersReport" ? "active" : "")" asp-controller="Admin" asp-action="OrdersReport">Orders</a>
+            <a class="nav-item @(currentController == "Admin" && currentAction == "LoansReport" ? "active" : "")" asp-controller="Admin" asp-action="LoansReport">Loans</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="sidebar-user-name">@adminDisplay</div>
+        <div class="sidebar-user-role">Administrator</div>
+        <form asp-controller="Account" asp-action="Logout" method="post" style="margin-top:0.75rem">
+            <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.15);padding:0.25rem 0.5rem;font-size:0.75rem;min-height:30px">
+                Sign out
+            </button>
+        </form>
+    </div>
+</aside>

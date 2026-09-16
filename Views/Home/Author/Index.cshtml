@@ -1,0 +1,195 @@
+@model BookShelf.ViewModels.Authors.AuthorDashboardViewModel
+@{
+    ViewData["Title"] = "Author Dashboard";
+    var firstName = string.IsNullOrWhiteSpace(Model.PenName)
+        ? "Author"
+        : Model.PenName.Split(' ', StringSplitOptions.RemoveEmptyEntries).First();
+}
+
+<div class="dashboard-shell">
+    <partial name="_AuthorSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Author Dashboard</p>
+                <h1>Welcome back, @firstName</h1>
+            </div>
+            <div style="display:flex; gap:.75rem; align-items:center;">
+                @if (Model.Status == "Pending")
+                {
+                    <span class="badge badge-pending">Application pending review</span>
+                }
+                else if (Model.Status == "Rejected")
+                {
+                    <span class="badge badge-rejected">Application rejected</span>
+                }
+                else if (Model.Status == "Suspended")
+                {
+                    <span class="badge badge-rejected">Suspended</span>
+                }
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-secondary">Sign out</button>
+                </form>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        @if (Model.Status == "None")
+        {
+            <section class="panel-card large" style="margin-bottom: 1.5rem;">
+                <div class="panel-header">
+                    <h3>You're not an author yet</h3>
+                </div>
+                <p style="padding: 0 1rem 1rem;">Apply to publish books on BookShelf — once an admin approves your application, you can submit titles, manage sales, and track loans from this dashboard.</p>
+                <div style="padding: 0 1rem 1.25rem;">
+                    <a asp-controller="Account" asp-action="BecomeAuthor" class="btn btn-primary">Apply to become an author</a>
+                </div>
+            </section>
+        }
+
+        <!-- ===== STATS ===== -->
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Published books</span>
+                <strong class="stat-card-value">@Model.PublishedBooksCount</strong>
+                <small class="stat-card-meta">live in the catalog</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Pending review</span>
+                <strong class="stat-card-value">@Model.PendingReviewCount</strong>
+                <small class="stat-card-meta @(Model.PendingReviewCount > 0 ? "is-warning" : "")">
+                    @(Model.PendingReviewCount > 0 ? "awaiting admin" : "nothing waiting")
+                </small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Copies sold</span>
+                <strong class="stat-card-value">@Model.CopiesSoldCount</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Times loaned</span>
+                <strong class="stat-card-value">@Model.TimesLoanedCount</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+        </section>
+
+        <!-- ===== BOOKS TABLE ===== -->
+        <section class="dashboard-panels">
+            <div class="panel-card large">
+                <div class="panel-header">
+                    <h3>My books</h3>
+                    <a asp-controller="Author" asp-action="AddBook" class="btn btn-primary btn-sm">Add book</a>
+                </div>
+
+                @if (!Model.Books.Any())
+                {
+                    <p class="text-muted" style="padding:1rem;">You haven't submitted any books yet.</p>
+                }
+                else
+                {
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>For sale</th>
+                                <th>For loan</th>
+                                <th>Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var book in Model.Books.OrderByDescending(b => b.CreatedAt))
+                            {
+                                var badgeClass = book.Status switch
+                                {
+                                    "Approved" => "badge-approved",
+                                    "Pending" => "badge-pending",
+                                    "Rejected" => "badge-rejected",
+                                    "Delisted" => "badge-delisted",
+                                    _ => "badge-neutral"
+                                };
+                                <tr>
+                                    <td>@book.Title</td>
+                                    <td><span class="badge @badgeClass">@book.Status</span></td>
+                                    <td>
+                                        @if (book.IsForSale && book.Price.HasValue)
+                                        {
+                                            <span>$@book.Price.Value.ToString("F2")</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">—</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (book.IsForLoan)
+                                        {
+                                            <span>Yes</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No</span>
+                                        }
+                                    </td>
+                                    <td>@book.StockForSale sale / @book.StockForLoan loan</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3>Quick actions</h3>
+                </div>
+                <div class="quick-actions">
+                    <a asp-controller="Author" asp-action="AddBook" class="action-btn">Add new book</a>
+                    <a asp-controller="Author" asp-action="EditProfile" class="action-btn">Edit author profile</a>
+                    <a asp-controller="Author" asp-action="Sales" class="action-btn">View sales report</a>
+                    <a asp-controller="Author" asp-action="MyBooks" class="action-btn">Manage my books</a>
+                </div>
+            </div>
+        </section>
+
+        @if (Model.TotalSalesRevenue > 0 || Model.CopiesSoldCount > 0)
+        {
+            <section class="dashboard-panels">
+                <div class="panel-card large">
+                    <div class="panel-header">
+                        <h3>At a glance</h3>
+                        <span class="panel-header-meta">@Model.PenName</span>
+                    </div>
+                    <div class="glance-strip">
+                        <div class="glance-item">
+                            <span class="glance-value">$@Model.TotalSalesRevenue.ToString("F2")</span>
+                            <span class="glance-label">lifetime sales revenue</span>
+                        </div>
+                        <div class="glance-item">
+                            <span class="glance-value">@Model.CopiesSoldCount</span>
+                            <span class="glance-label">copies sold</span>
+                        </div>
+                        <div class="glance-item">
+                            <span class="glance-value">@Model.TimesLoanedCount</span>
+                            <span class="glance-label">times loaned</span>
+                        </div>
+                        <a asp-controller="Author" asp-action="Sales" class="glance-link">Open sales report &rarr;</a>
+                    </div>
+                </div>
+            </section>
+        }
+    </main>
+</div>

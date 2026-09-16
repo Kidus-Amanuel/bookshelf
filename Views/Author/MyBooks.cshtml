@@ -1,0 +1,99 @@
+@model List<BookShelf.Models.Book>
+@{
+    ViewData["Title"] = "My Books";
+    var penName = ViewData["PenName"] as string ?? User.Identity?.Name ?? "Author";
+}
+
+<div class="dashboard-shell">
+    <partial name="_AuthorSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Authoring</p>
+                <h1>My books</h1>
+            </div>
+            <div style="display:flex; gap:.75rem; align-items:center;">
+                <a asp-controller="Author" asp-action="AddBook" class="btn btn-primary">Add a book</a>
+                <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                    <button type="submit" class="btn btn-secondary">Sign out</button>
+                </form>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>All books by @penName</h3>
+                <span class="info-pill">@Model.Count total</span>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div style="padding: 1.5rem;">
+                    <p class="text-muted" style="margin-bottom: 1rem;">You haven't submitted any books yet. Once you do, they'll appear here for management.</p>
+                    <a asp-controller="Author" asp-action="AddBook" class="btn btn-primary btn-sm">Submit your first book</a>
+                </div>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>ISBN</th>
+                            <th>Status</th>
+                            <th>For sale</th>
+                            <th>For loan</th>
+                            <th>Stock</th>
+                            <th>Submitted</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var book in Model.OrderByDescending(b => b.CreatedAt))
+                        {
+                            var badgeClass = book.Status switch
+                            {
+                                "Approved" => "badge-approved",
+                                "Pending" => "badge-pending",
+                                "Rejected" => "badge-rejected",
+                                "Delisted" => "badge-delisted",
+                                _ => "badge-neutral"
+                            };
+                            <tr>
+                                <td><strong>@book.Title</strong></td>
+                                <td class="text-muted">@book.ISBN</td>
+                                <td><span class="badge @badgeClass">@book.Status</span></td>
+                                <td>
+                                    @if (book.IsForSale && book.Price.HasValue)
+                                    {
+                                        <span>$@book.Price.Value.ToString("F2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td>@(book.IsForLoan ? "Yes" : "No")</td>
+                                <td>@book.StockForSale sale / @book.StockForLoan loan</td>
+                                <td class="text-muted">@book.CreatedAt.ToShortDateString()</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</div>

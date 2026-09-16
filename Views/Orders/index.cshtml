@@ -1,0 +1,74 @@
+@model IEnumerable<BookShelf.Models.Order>
+
+@{
+    ViewData["Title"] = "All Orders";
+}
+
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-badge">B</div>
+            <div><div class="mini-label">Library</div><h2>BookShelf</h2></div>
+        </div>
+        @* TODO: shared sidebar partial (Admin role) *@
+        <nav class="sidebar-nav">
+            <a class="nav-item" asp-controller="Admin" asp-action="Index">Overview</a>
+            <a class="nav-item active" asp-controller="Orders" asp-action="Index">Orders</a>
+        </nav>
+    </aside>
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div><p class="eyebrow">Store</p><h1>Orders</h1></div>
+        </header>
+
+        <section class="stats-grid dashboard-stats">
+            <div class="stat-card">
+                <span>Total orders</span>
+                <strong>@Model.Count()</strong>
+            </div>
+            <div class="stat-card">
+                <span>Pending</span>
+                <strong>@Model.Count(o => o.Status == "Pending")</strong>
+            </div>
+            <div class="stat-card">
+                <span>Revenue (paid)</span>
+                <strong>$@Model.Where(o => o.Status == "Paid" || o.Status == "Shipped").Sum(o => o.TotalAmount).ToString("F2")</strong>
+            </div>
+            <div class="stat-card">
+                <span>Local vs online</span>
+                <strong>@Model.Count(o => o.Channel == "Local") / @Model.Count(o => o.Channel == "Online")</strong>
+            </div>
+        </section>
+
+        @* TODO: wire these to asp-route-status / asp-route-channel query params read server-side *@
+        <div class="filter-chips" style="margin-bottom:1rem">
+            <a asp-action="Index" class="chip active">All</a>
+            <a asp-action="Index" asp-route-channel="Online" class="chip">Online</a>
+            <a asp-action="Index" asp-route-channel="Local" class="chip">Local</a>
+            <a asp-action="Index" asp-route-status="Pending" class="chip">Pending</a>
+        </div>
+
+        <div class="panel-card large no-margin">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Order</th><th>Customer</th><th>Channel</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>#@order.Id</td>
+                            <td>@order.User.FullName</td>
+                            <td>@order.Channel@(order.Branch != null ? $" — {order.Branch.Name}" : "")</td>
+                            <td>@order.CreatedAt.ToShortDateString()</td>
+                            <td>$@order.TotalAmount.ToString("F2")</td>
+                            <td><span class="badge badge-@(order.Status.ToLower())">@order.Status</span></td>
+                            <td><a asp-action="Details" asp-route-id="@order.Id" class="text-link">View</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>

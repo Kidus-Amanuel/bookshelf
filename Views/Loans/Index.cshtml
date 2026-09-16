@@ -4,26 +4,122 @@
     ViewData["Title"] = "Loans";
 }
 
-<h2>Loans</h2>
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-badge">B</div>
+            <div>
+                <div class="mini-label">Library</div>
+                <h2>BookShelf</h2>
+            </div>
+        </div>
+        @* TODO: shared sidebar partial (Admin role) *@
+        <nav class="sidebar-nav">
+            <a class="nav-item" asp-controller="Admin" asp-action="Index">Overview</a>
+            <a class="nav-item active" asp-controller="Loans" asp-action="Index">Loans</a>
+        </nav>
+    </aside>
 
-<table>
-    <thead>
-        <tr>
-            <th>User</th>
-            <th>Book</th>
-            <th>Borrowed</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var loan in Model)
-        {
-            <tr>
-                <td>@loan.User.FullName</td>
-                <td>@loan.Book.Title</td>
-                <td>@loan.BorrowedAt.ToShortDateString()</td>
-                <td>@(loan.IsReturned ? "Returned" : "Active")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Library</p>
+                <h1>Loans</h1>
+            </div>
+        </header>
+
+        <section class="stats-grid dashboard-stats">
+            <div class="stat-card">
+                <span>Active loans</span>
+                @* TODO: Model.Count(l => !l.IsReturned) *@
+                <strong>2</strong>
+            </div>
+            <div class="stat-card">
+                <span>Overdue</span>
+                @* TODO: Model.Count(l => !l.IsReturned && l.DueAt < DateTime.UtcNow) *@
+                <strong>1</strong>
+                <small class="is-warning">needs follow-up</small>
+            </div>
+            <div class="stat-card">
+                <span>Unpaid fines</span>
+                @* TODO: Model.Where(l => !l.FinePaid).Sum(l => l.FineAmount) *@
+                <strong>$7.00</strong>
+            </div>
+            <div class="stat-card">
+                <span>Returned this month</span>
+                <strong>1</strong>
+            </div>
+        </section>
+
+        <div class="filter-chips" style="margin-bottom:1rem">
+            <a asp-action="Index" class="chip active">All</a>
+            <a asp-action="Index" asp-route-status="active" class="chip">Active</a>
+            <a asp-action="Index" asp-route-status="overdue" class="chip">Overdue</a>
+            <a asp-action="Index" asp-route-status="returned" class="chip">Returned</a>
+        </div>
+
+        <div class="panel-card large no-margin">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Member</th>
+                        <th>Book</th>
+                        <th>Channel</th>
+                        <th>Borrowed</th>
+                        <th>Due</th>
+                        <th>Fine</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var loan in Model)
+                    {
+                        var isOverdue = !loan.IsReturned && loan.DueAt < DateTime.UtcNow;
+                        <tr>
+                            <td>@loan.User.FullName</td>
+                            <td>@loan.Book.Title</td>
+                            <td>@loan.Channel@(loan.Branch != null ? $" — {loan.Branch.Name}" : "")</td>
+                            <td>@loan.BorrowedAt.ToShortDateString()</td>
+                            <td>@loan.DueAt.ToShortDateString()</td>
+                            <td>
+                                @if (loan.FineAmount > 0)
+                                {
+                                    <span class="@(loan.FinePaid ? "" : "text-danger")">
+                                        $@loan.FineAmount.ToString("F2")@(loan.FinePaid ? " (paid)" : "")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="stat-card-meta">—</span>
+                                }
+                            </td>
+                            <td>
+                                @if (loan.IsReturned)
+                                {
+                                    <span class="badge badge-neutral">Returned</span>
+                                }
+                                else if (isOverdue)
+                                {
+                                    <span class="badge badge-rejected">Overdue</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-approved">Active</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!loan.IsReturned)
+                                {
+                                    <form asp-action="Return" asp-route-id="@loan.Id" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-secondary btn-sm">Mark returned</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>

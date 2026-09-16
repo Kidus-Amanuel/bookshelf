@@ -1,0 +1,85 @@
+@model BookShelf.Controllers.InviteAdminRequest
+@{
+    ViewData["Title"] = "Invite admin";
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Operations</p>
+                <h1>Invite an admin</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="dashboard-panels">
+            <div class="panel-card large">
+                <div class="panel-header">
+                    <h3>Send invitation</h3>
+                </div>
+
+                <div style="padding: 0 1rem 1.25rem;">
+                    <p class="text-muted" style="margin-bottom: 1rem;">
+                        Enter the email of the person you want to onboard as an admin.
+                        We'll generate a one-time signup link that expires in 7 days.
+                    </p>
+
+                    <form asp-controller="Admin" asp-action="InviteAdmin" method="post">
+                        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                        <div class="form-row">
+                            <label for="Email">Email address</label>
+                            <input id="Email" name="Email" type="email" class="form-control" placeholder="newadmin@@example.com" required />
+                        </div>
+
+                        <div style="display:flex; gap:.75rem; margin-top: 1rem;">
+                            <button type="submit" class="btn btn-primary">Generate invitation</button>
+                            <a asp-controller="Home" asp-action="Admin" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3>How it works</h3>
+                </div>
+                <ol style="padding: 0 1.5rem 1rem; line-height:1.7;">
+                    <li>You submit the new admin's email.</li>
+                    <li>We create a unique signup link valid for 7 days.</li>
+                    <li>Share the link with the new admin.</li>
+                    <li>They pick a password and gain admin access.</li>
+                </ol>
+                <p class="text-muted" style="padding:0 1.5rem 1.25rem; font-size:.85rem;">
+                    Email delivery isn't wired yet — share the link manually for now.
+                </p>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    .form-row { display:flex; flex-direction:column; gap:.4rem; margin-bottom: 1rem; }
+    .form-row label { font-weight:600; font-size:.9rem; color:var(--text,#1f2937); }
+    .form-control { padding:.6rem .8rem; border:1px solid var(--border,#d4d4d8); border-radius:8px; font-size:.95rem; background:#fff; color:inherit; }
+    .form-control:focus { outline:none; border-color:var(--accent,#2563eb); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+    .validation-summary { background:#fee2e2; color:#991b1b; padding:.75rem 1rem; border-radius:8px; margin-bottom:1rem; }
+</style>

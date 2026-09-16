@@ -1,35 +1,131 @@
 @model BookShelf.ViewModels.Books.BookViewModel
 
 @{
-    ViewData["Title"] = "Create Book";
+    ViewData["Title"] = "Add New Book";
 }
 
-<h2>Add New Book</h2>
+<div class="dashboard-shell">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-badge">B</div>
+            <div>
+                <div class="mini-label">Books &amp; stories</div>
+                <h2>BookShelf</h2>
+            </div>
+        </div>
+        @* TODO: shared sidebar partial (Author role) *@
+        <nav class="sidebar-nav">
+            <a class="nav-item" asp-controller="Author" asp-action="Index">Overview</a>
+            <a class="nav-item" asp-controller="Author" asp-action="MyBooks">My books</a>
+            <a class="nav-item active" asp-controller="Books" asp-action="Create">Add a book</a>
+        </nav>
+    </aside>
 
-<form asp-action="Create" method="post">
-    <div>
-        <label asp-for="Title">Title</label>
-        <input asp-for="Title" />
-    </div>
-    <div>
-        <label asp-for="Author">Author</label>
-        <input asp-for="Author" />
-    </div>
-    <div>
-        <label asp-for="ISBN">ISBN</label>
-        <input asp-for="ISBN" />
-    </div>
-    <div>
-        <label asp-for="Category">Category</label>
-        <input asp-for="Category" />
-    </div>
-    <div>
-        <label asp-for="Quantity">Quantity</label>
-        <input asp-for="Quantity" type="number" />
-    </div>
-    <div>
-        <label asp-for="Price">Price</label>
-        <input asp-for="Price" type="number" step="0.01" />
-    </div>
-    <button type="submit">Save</button>
-</form>
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Author tools</p>
+                <h1>Add a new book</h1>
+            </div>
+        </header>
+
+        <div class="panel-card large">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+            <form asp-action="Create" method="post" class="book-form">
+                <div class="book-form-grid">
+                    <div class="book-form-fields">
+                        <div class="field-group">
+                            <label asp-for="Title">Title</label>
+                            <div class="input-shell">
+                                <input asp-for="Title" placeholder="e.g. The Silent Killer" />
+                            </div>
+                            <span asp-validation-for="Title" class="field-error"></span>
+                        </div>
+
+                        <div class="field-group">
+                            <label asp-for="Description">Description</label>
+                            <div class="input-shell">
+                                <textarea asp-for="Description" rows="4" placeholder="What's this book about?"></textarea>
+                            </div>
+                            <span asp-validation-for="Description" class="field-error"></span>
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label asp-for="ISBN">ISBN</label>
+                                <div class="input-shell">
+                                    <input asp-for="ISBN" placeholder="978-..." />
+                                </div>
+                                <span asp-validation-for="ISBN" class="field-error"></span>
+                            </div>
+                            <div class="field-group">
+                                <label asp-for="Price">Price ($)</label>
+                                <div class="input-shell">
+                                    <input asp-for="Price" type="number" step="0.01" placeholder="14.99" />
+                                </div>
+                                <span asp-validation-for="Price" class="field-error"></span>
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label asp-for="CoverImageUrl">Cover image URL</label>
+                            <div class="input-shell">
+                                <input asp-for="CoverImageUrl" id="coverUrlInput" placeholder="https://..." />
+                            </div>
+                            <span asp-validation-for="CoverImageUrl" class="field-error"></span>
+                        </div>
+
+                        <div class="toggle-row">
+                            <label class="toggle-switch">
+                                <input asp-for="IsForSale" type="checkbox" />
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">Available for sale</span>
+                            </label>
+                            <label class="toggle-switch">
+                                <input asp-for="IsForLoan" type="checkbox" />
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label">Available for loan</span>
+                            </label>
+                        </div>
+
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label asp-for="StockForSale">Stock for sale</label>
+                                <div class="input-shell">
+                                    <input asp-for="StockForSale" type="number" min="0" />
+                                </div>
+                            </div>
+                            <div class="field-group">
+                                <label asp-for="StockForLoan">Stock for loan</label>
+                                <div class="input-shell">
+                                    <input asp-for="StockForLoan" type="number" min="0" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit for review</button>
+                        <p class="form-hint">Your book will be visible in the catalog once an admin approves it.</p>
+                    </div>
+
+                    <div class="book-form-preview">
+                        <span class="mini-label">Cover preview</span>
+                        <div class="media-cover preview-cover">
+                            <img id="coverPreview" src="https://picsum.photos/seed/new-book/300/450" alt="Cover preview" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.getElementById('coverUrlInput').addEventListener('input', function (e) {
+            var preview = document.getElementById('coverPreview');
+            preview.src = e.target.value.trim() || 'https://picsum.photos/seed/new-book/300/450';
+        });
+    </script>
+}

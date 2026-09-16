@@ -1,0 +1,44 @@
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+    var userName = User.Identity?.Name ?? "Author";
+}
+
+<aside class="dashboard-sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-badge">B</div>
+        <div>
+            <div class="mini-label">Books &amp; stories</div>
+            <h2>BookShelf</h2>
+        </div>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Authoring</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Home" && currentAction == "Author" ? "active" : "")" asp-controller="Home" asp-action="Author">Overview</a>
+            <a class="nav-item @(currentController == "Author" && currentAction == "MyBooks" ? "active" : "")" asp-controller="Author" asp-action="MyBooks">My books</a>
+            <a class="nav-item @(currentController == "Author" && currentAction == "AddBook" ? "active" : "")" asp-controller="Author" asp-action="AddBook">Add a book</a>
+            <a class="nav-item @(currentController == "Author" && currentAction == "Sales" ? "active" : "")" asp-controller="Author" asp-action="Sales">Sales &amp; loans</a>
+            <a class="nav-item @(currentController == "Author" && currentAction == "EditProfile" ? "active" : "")" asp-controller="Author" asp-action="EditProfile">Edit author profile</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-section">
+        <span class="sidebar-section-label">Reader</span>
+        <nav class="sidebar-nav">
+            <a class="nav-item @(currentController == "Home" && currentAction == "Customer" ? "active" : "")" asp-controller="Home" asp-action="Customer">My customer account</a>
+            <a class="nav-item @(currentController == "Books" ? "active" : "")" asp-controller="Books" asp-action="Index">Browse catalog</a>
+        </nav>
+    </div>
+
+    <div class="sidebar-user">
+        <div class="sidebar-user-name">@userName</div>
+        <div class="sidebar-user-role">Author</div>
+        <form asp-controller="Account" asp-action="Logout" method="post" style="margin-top:0.75rem">
+            <button type="submit" class="btn btn-secondary btn-sm btn-block" style="background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.15);padding:0.25rem 0.5rem;font-size:0.75rem;min-height:30px">
+                Sign out
+            </button>
+        </form>
+    </div>
+</aside>

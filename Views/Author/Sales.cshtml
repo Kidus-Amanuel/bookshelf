@@ -1,0 +1,110 @@
+@model BookShelf.ViewModels.Authors.AuthorSalesViewModel
+@{
+    ViewData["Title"] = "Sales & Loans";
+}
+
+<div class="dashboard-shell">
+    <partial name="_AuthorSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Authoring</p>
+                <h1>Sales &amp; loans</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Total copies sold</span>
+                <strong class="stat-card-value">@Model.TotalCopiesSold</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Revenue</span>
+                <strong class="stat-card-value">$@Model.TotalRevenue.ToString("F2")</strong>
+                <small class="stat-card-meta">before subscription discounts</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Times loaned</span>
+                <strong class="stat-card-value">@Model.TotalTimesLoaned</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Titles tracked</span>
+                <strong class="stat-card-value">@Model.BookPerformance.Count</strong>
+                <small class="stat-card-meta">by @Model.PenName</small>
+            </div>
+        </section>
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>Per-book performance</h3>
+                <span class="panel-header-meta">@Model.PenName</span>
+            </div>
+
+            @if (!Model.BookPerformance.Any())
+            {
+                <p class="text-muted" style="padding:1rem;">No sales or loans yet. Submit a book to start tracking performance.</p>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th>Copies sold</th>
+                            <th>Revenue</th>
+                            <th>Times loaned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var row in Model.BookPerformance)
+                        {
+                            var badgeClass = row.Status switch
+                            {
+                                "Approved" => "badge-approved",
+                                "Pending" => "badge-pending",
+                                "Rejected" => "badge-rejected",
+                                "Delisted" => "badge-delisted",
+                                _ => "badge-neutral"
+                            };
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:.75rem;">
+                                        @if (!string.IsNullOrEmpty(row.CoverImageUrl))
+                                        {
+                                            <img src="@row.CoverImageUrl" alt="@row.Title cover" style="width:36px; height:54px; object-fit:cover; border-radius:4px;" />
+                                        }
+                                        else
+                                        {
+                                            <div style="width:36px; height:54px; border-radius:4px; background:#e5e7eb;"></div>
+                                        }
+                                        <strong>@row.Title</strong>
+                                    </div>
+                                </td>
+                                <td><span class="badge @badgeClass">@row.Status</span></td>
+                                <td>$@row.Price.ToString("F2")</td>
+                                <td>@row.CopiesSold</td>
+                                <td>$@row.TotalSalesRevenue.ToString("F2")</td>
+                                <td>@row.TimesLoaned</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</div>

@@ -1,0 +1,187 @@
+@model BookShelf.ViewModels.Customer.CustomerActivityViewModel
+
+@{
+    ViewData["Title"] = "My Activity";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">My Activity</p>
+                <h1>Loans, orders &amp; your plan</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Active loans</span>
+                <strong class="stat-card-value">@Model.ActiveLoansCount</strong>
+                <small class="stat-card-meta">borrowed from library</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Books purchased</span>
+                <strong class="stat-card-value">@Model.BooksPurchasedCount</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Plan</span>
+                <strong class="stat-card-value">@(Model.Subscription?.Plan?.Name ?? "No Plan")</strong>
+                <small class="stat-card-meta @(Model.DaysRemaining < 5 ? "is-warning" : "")">
+                    @(Model.DaysRemaining > 0 ? $"renews in {Model.DaysRemaining} days" : "inactive")
+                </small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Outstanding fines</span>
+                <strong class="stat-card-value">$@Model.FinesOwed.ToString("F2")</strong>
+                <small class="stat-card-meta">@(Model.FinesOwed == 0 ? "you're all clear" : "payment required")</small>
+            </div>
+        </section>
+
+        <section class="activity-tabs" data-tabs>
+            <div class="tab-bar">
+                <button type="button" class="tab-btn active" data-tab-target="loans">My loans</button>
+                <button type="button" class="tab-btn" data-tab-target="orders">My orders</button>
+                <button type="button" class="tab-btn" data-tab-target="plan">Subscription</button>
+            </div>
+
+            <!-- Loans Tab -->
+            <div class="tab-panel active" data-tab-panel="loans">
+                <div class="panel-card large no-margin">
+                    <div class="panel-header">
+                        <h3>Current &amp; past loans</h3>
+                        <a asp-controller="Books" asp-action="Index" class="btn btn-primary btn-sm">Borrow a book</a>
+                    </div>
+                    <div class="approval-list">
+                        @if (!Model.Loans.Any())
+                        {
+                            <p class="text-muted" style="padding:1rem;">You don't have any loans recorded yet.</p>
+                        }
+                        else
+                        {
+                            @foreach (var loan in Model.Loans)
+                            {
+                                var isOverdue = !loan.IsReturned && loan.DueAt < DateTime.UtcNow;
+                                <div class="approval-row">
+                                    <div class="approval-row-body">
+                                        <span class="approval-row-title">@(loan.Book?.Title ?? "Book Loan")</span>
+                                        <span class="approval-row-meta">
+                                            Borrowed @loan.BorrowedAt.ToShortDateString() &middot; 
+                                            @(loan.IsReturned ? $"Returned {loan.ReturnedAt?.ToShortDateString()}" : $"Due {loan.DueAt.ToShortDateString()}")
+                                        </span>
+                                    </div>
+                                    @if (loan.IsReturned)
+                                    {
+                                        <span class="badge badge-neutral">Returned</span>
+                                    }
+                                    else if (isOverdue)
+                                    {
+                                        <span class="badge badge-rejected">Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-approved" style="background:#dcfce7;color:#166534;">On time</span>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Tab -->
+            <div class="tab-panel" data-tab-panel="orders">
+                <div class="panel-card large no-margin">
+                    <div class="panel-header">
+                        <h3>Order history</h3>
+                        <a asp-controller="Books" asp-action="Index" class="btn btn-primary btn-sm">Browse catalog</a>
+                    </div>
+                    @if (!Model.Orders.Any())
+                    {
+                        <p class="text-muted" style="padding:1rem;">No orders placed yet.</p>
+                    }
+                    else
+                    {
+                        <table class="data-table">
+                            <thead>
+                                <tr><th>Order</th><th>Items</th><th>Amount</th><th>Status</th><th></th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model.Orders)
+                                {
+                                    <tr>
+                                        <td>#@order.Id</td>
+                                        <td>
+                                            @string.Join(", ", order.OrderItems.Select(oi => $"{oi.Book?.Title ?? "Book"} ×{oi.Quantity}"))
+                                        </td>
+                                        <td>$@order.TotalAmount.ToString("F2")</td>
+                                        <td>
+                                            <span class="badge badge-@(order.Status.ToLower())">@order.Status</span>
+                                        </td>
+                                        <td>
+                                            <a asp-controller="Orders" asp-action="Details" asp-route-id="@order.Id" class="text-link">View</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+
+            <!-- Subscription Tab -->
+            <div class="tab-panel" data-tab-panel="plan">
+                <div class="panel-card large no-margin">
+                    <div class="panel-header">
+                        <h3>Your subscription</h3>
+                        <a asp-controller="Subscription" asp-action="Index" class="btn btn-secondary btn-sm">Change plan</a>
+                    </div>
+                    @if (Model.Subscription == null)
+                    {
+                        <p class="stat-card-meta" style="padding:1rem;">You don't have an active subscription plan.</p>
+                        <a asp-controller="Subscription" asp-action="Index" class="btn btn-primary btn-sm" style="align-self:flex-start; margin-left:1rem;">Choose a plan</a>
+                    }
+                    else
+                    {
+                        <div class="plan-detail">
+                            <div>
+                                <span class="plan-detail-label">Current plan</span>
+                                <strong>@Model.Subscription.Plan.Name</strong>
+                            </div>
+                            <div>
+                                <span class="plan-detail-label">Loan limit</span>
+                                <strong>@Model.Subscription.Plan.MaxActiveLoans concurrent loans</strong>
+                            </div>
+                            <div>
+                                <span class="plan-detail-label">Purchase discount</span>
+                                <strong>@Model.Subscription.Plan.DiscountPercentOnPurchases% off every order</strong>
+                            </div>
+                            <div>
+                                <span class="plan-detail-label">Renewal</span>
+                                <strong>@Model.Subscription.EndDate.ToShortDateString() &middot; @(Model.Subscription.AutoRenew ? "auto-renew on" : "auto-renew off")</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    document.querySelectorAll('[data-tabs]').forEach(function (tabs) {
+        tabs.querySelectorAll('.tab-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                tabs.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
+                tabs.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
+                btn.classList.add('active');
+                tabs.querySelector('[data-tab-panel="' + btn.dataset.tabTarget + '"]').classList.add('active');
+            });
+        });
+    });
+</script>

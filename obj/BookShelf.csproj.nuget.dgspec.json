@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\kidusam\\Desktop\\dev\\BookShelf\\BookShelf.csproj": {}
+    "C:\\Users\\kidusam\\Desktop\\dev\\bookshelf\\BookShelf.csproj": {}
   },
   "projects": {
-    "C:\\Users\\kidusam\\Desktop\\dev\\BookShelf\\BookShelf.csproj": {
+    "C:\\Users\\kidusam\\Desktop\\dev\\bookshelf\\BookShelf.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\kidusam\\Desktop\\dev\\BookShelf\\BookShelf.csproj",
+        "projectUniqueName": "C:\\Users\\kidusam\\Desktop\\dev\\bookshelf\\BookShelf.csproj",
         "projectName": "BookShelf",
-        "projectPath": "C:\\Users\\kidusam\\Desktop\\dev\\BookShelf\\BookShelf.csproj",
+        "projectPath": "C:\\Users\\kidusam\\Desktop\\dev\\bookshelf\\BookShelf.csproj",
         "packagesPath": "C:\\Users\\kidusam\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\kidusam\\Desktop\\dev\\BookShelf\\obj\\",
+        "outputPath": "C:\\Users\\kidusam\\Desktop\\dev\\bookshelf\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\kidusam\\AppData\\Roaming\\NuGet\\NuGet.Config"

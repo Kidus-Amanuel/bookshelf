@@ -1,0 +1,184 @@
+@model List<BookShelf.Models.Book>
+@{
+    ViewData["Title"] = "Book approvals";
+    var pending = Model.Where(b => b.Status == "Pending").ToList();
+    var other = Model.Where(b => b.Status != "Pending").ToList();
+    var filter = ViewData["Filter"] as string ?? "Pending";
+    var allBooks = (int)(ViewData["AllBooks"] ?? 0);
+    var pendingCount = (int)(ViewData["PendingCount"] ?? 0);
+    var approvedCount = (int)(ViewData["ApprovedCount"] ?? 0);
+    var rejectedCount = (int)(ViewData["RejectedCount"] ?? 0);
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Approvals</p>
+                <h1>Book approvals</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="pill pill-success" style="margin-bottom: 1.5rem; padding: 0.6rem 1rem; width: 100%;">
+                @TempData["Success"]
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="validation-summary" style="margin-bottom: 1.5rem;">
+                @TempData["Error"]
+            </div>
+        }
+
+        @* ============ STATS + FILTER TABS ============ *@
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Pending</span>
+                <strong class="stat-card-value">@pendingCount</strong>
+                <small class="stat-card-meta @(pendingCount > 0 ? "is-warning" : "")">awaiting decision</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Approved</span>
+                <strong class="stat-card-value">@approvedCount</strong>
+                <small class="stat-card-meta">live in catalog</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Rejected</span>
+                <strong class="stat-card-value">@rejectedCount</strong>
+                <small class="stat-card-meta">declined</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">All books</span>
+                <strong class="stat-card-value">@allBooks</strong>
+                <small class="stat-card-meta">across all statuses</small>
+            </div>
+        </section>
+
+        <section class="activity-tabs" data-tabs>
+            <div class="tab-bar">
+                <a class="tab-btn @(filter == "Pending" ? "active" : "")" asp-controller="Admin" asp-action="PendingBooks" asp-route-status="Pending">Pending (@pendingCount)</a>
+                <a class="tab-btn @(filter == "Approved" ? "active" : "")" asp-controller="Admin" asp-action="PendingBooks" asp-route-status="Approved">Approved (@approvedCount)</a>
+                <a class="tab-btn @(filter == "Rejected" ? "active" : "")" asp-controller="Admin" asp-action="PendingBooks" asp-route-status="Rejected">Rejected (@rejectedCount)</a>
+                <a class="tab-btn @(filter == "All" ? "active" : "")" asp-controller="Admin" asp-action="PendingBooks" asp-route-status="All">All (@allBooks)</a>
+            </div>
+
+            <div class="tab-panel active" data-tab-panel="books">
+                <div class="panel-card large no-margin">
+                    <div class="panel-header">
+                        <h3>Books — @filter</h3>
+                        <span class="info-pill">@Model.Count record@(Model.Count == 1 ? "" : "s")</span>
+                    </div>
+
+                    @if (!Model.Any())
+                    {
+                        <p class="text-muted" style="padding:1rem;">No books in this view.</p>
+                    }
+                    else
+                    {
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Author</th>
+                                    <th>ISBN</th>
+                                    <th>Sale / Loan stock</th>
+                                    <th>Submitted</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var book in Model)
+                                {
+                                    var badgeClass = book.Status switch
+                                    {
+                                        "Approved" => "badge-approved",
+                                        "Pending" => "badge-pending",
+                                        "Rejected" => "badge-rejected",
+                                        "Delisted" => "badge-delisted",
+                                        _ => "badge-neutral"
+                                    };
+                                    var author = book.AuthorProfile;
+                                    <tr>
+                                        <td>
+                                            <div style="display:flex; align-items:center; gap:.75rem;">
+                                                @if (!string.IsNullOrWhiteSpace(book.CoverImageUrl))
+                                                {
+                                                    <img src="@book.CoverImageUrl" alt="@book.Title cover" style="width:36px;height:54px;object-fit:cover;border-radius:4px;" />
+                                                }
+                                                else
+                                                {
+                                                    <div style="width:36px;height:54px;border-radius:4px;background:#e5e7eb;"></div>
+                                                }
+                                                <div>
+                                                    <strong>@book.Title</strong>
+                                                    @if (!string.IsNullOrWhiteSpace(book.Description))
+                                                    {
+                                                        <div class="text-muted" style="font-size:.8rem;">
+                                                            @(book.Description.Length > 80 ? book.Description.Substring(0, 80) + "…" : book.Description)
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (author != null)
+                                            {
+                                                <strong>@author.PenName</strong>
+                                                <div class="text-muted" style="font-size:.8rem;">@(author.User?.Email ?? "")</div>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No author</span>
+                                            }
+                                        </td>
+                                        <td class="text-muted">@book.ISBN</td>
+                                        <td>@book.StockForSale / @book.StockForLoan</td>
+                                        <td>@book.CreatedAt.ToString("MMM d, yyyy")</td>
+                                        <td><span class="badge @badgeClass">@book.Status</span></td>
+                                        <td>
+                                            <div style="display:flex; gap:.4rem;">
+                                                @if (book.Status == "Pending")
+                                                {
+                                                    <form asp-controller="Admin" asp-action="ApproveBook" asp-route-id="@book.Id" method="post" style="margin:0;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-primary btn-sm">Approve</button>
+                                                    </form>
+                                                    <form asp-controller="Admin" asp-action="RejectBook" asp-route-id="@book.Id" method="post" style="margin:0;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-secondary btn-sm"
+                                                                onclick="return confirm('Reject \"@book.Title\"?');">
+                                                            Reject
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else if (book.Status == "Rejected" || book.Status == "Delisted")
+                                                {
+                                                    <form asp-controller="Admin" asp-action="ApproveBook" asp-route-id="@book.Id" method="post" style="margin:0;">
+                                                        @Html.AntiForgeryToken()
+                                                        <button type="submit" class="btn btn-primary btn-sm">Re-approve</button>
+                                                    </form>
+                                                }
+                                                else if (book.Status == "Approved")
+                                                {
+                                                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="btn btn-secondary btn-sm">View</a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+            </div>
+        </section>
+    </main>
+</div>

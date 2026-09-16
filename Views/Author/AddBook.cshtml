@@ -1,0 +1,117 @@
+@model BookShelf.ViewModels.Books.BookViewModel
+@{
+    ViewData["Title"] = "Add a Book";
+    var penName = ViewData["PenName"] as string ?? User.Identity?.Name ?? "Author";
+}
+
+<div class="dashboard-shell">
+    <partial name="_AuthorSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Authoring</p>
+                <h1>Add a book</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>Submit a new title</h3>
+                <span class="panel-header-meta">Submitting as @penName</span>
+            </div>
+
+            <div style="padding: 0 1rem 1.25rem;">
+                <p class="text-muted" style="margin-bottom: 1rem;">
+                    Books go through admin review before they appear in the public catalog.
+                    Make sure all the details below are accurate.
+                </p>
+
+                <form asp-controller="Author" asp-action="AddBook" method="post">
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <div class="form-row">
+                        <label asp-for="Title">Title</label>
+                        <input asp-for="Title" class="form-control" placeholder="The Silent Killer" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <label asp-for="Description">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="A short summary readers will see in the catalog."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-row">
+                            <label asp-for="ISBN">ISBN</label>
+                            <input asp-for="ISBN" class="form-control" placeholder="978-0-..." />
+                            <span asp-validation-for="ISBN" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-row">
+                            <label asp-for="CoverImageUrl">Cover image URL</label>
+                            <input asp-for="CoverImageUrl" class="form-control" placeholder="https://..." />
+                            <span asp-validation-for="CoverImageUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-row">
+                            <label>
+                                <input asp-for="IsForSale" type="checkbox" />
+                                Available for sale
+                            </label>
+                        </div>
+                        <div class="form-row">
+                            <label>
+                                <input asp-for="IsForLoan" type="checkbox" />
+                                Available for loan
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-grid-3">
+                        <div class="form-row">
+                            <label asp-for="Price">Price (USD)</label>
+                            <input asp-for="Price" type="number" min="0" step="0.01" class="form-control" placeholder="14.99" />
+                            <span asp-validation-for="Price" class="text-danger"></span>
+                        </div>
+                        <div class="form-row">
+                            <label asp-for="StockForSale">Stock for sale</label>
+                            <input asp-for="StockForSale" type="number" min="0" class="form-control" value="0" />
+                            <span asp-validation-for="StockForSale" class="text-danger"></span>
+                        </div>
+                        <div class="form-row">
+                            <label asp-for="StockForLoan">Stock for loan</label>
+                            <input asp-for="StockForLoan" type="number" min="0" class="form-control" value="0" />
+                            <span asp-validation-for="StockForLoan" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:.75rem; margin-top: 1rem;">
+                        <button type="submit" class="btn btn-primary">Submit for review</button>
+                        <a asp-controller="Author" asp-action="MyBooks" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    .form-row { display:flex; flex-direction:column; gap:.4rem; margin-bottom: 1rem; }
+    .form-row label { font-weight:600; font-size:.9rem; color:var(--text,#1f2937); }
+    .form-control { padding:.6rem .8rem; border:1px solid var(--border,#d4d4d8); border-radius:8px; font-size:.95rem; background:#fff; color:inherit; }
+    .form-control:focus { outline:none; border-color:var(--accent,#2563eb); box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+    .form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+    .text-danger { color:#b91c1c; font-size:.8rem; }
+    .validation-summary { background:#fee2e2; color:#991b1b; padding:.75rem 1rem; border-radius:8px; margin-bottom:1rem; }
+    @@media (max-width: 700px) {
+        .form-grid-2, .form-grid-3 { grid-template-columns:1fr; }
+    }
+</style>

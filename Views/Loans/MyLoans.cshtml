@@ -1,0 +1,88 @@
+@model IEnumerable<BookShelf.Models.Loan>
+
+@{
+    ViewData["Title"] = "My Loans";
+}
+
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Library</p>
+                <h1>My Loans</h1>
+            </div>
+            <a asp-controller="Books" asp-action="Index" class="btn btn-primary">Borrow books</a>
+        </header>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-state">
+                <p>You haven't borrowed any books yet.</p>
+                <a asp-controller="Books" asp-action="Index" class="btn btn-primary">Browse catalog</a>
+            </div>
+        }
+        else
+        {
+            <div class="panel-card large no-margin">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Borrowed</th>
+                            <th>Due date</th>
+                            <th>Status</th>
+                            <th>Fine</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var loan in Model)
+                        {
+                            var isOverdue = !loan.IsReturned && loan.DueAt < DateTime.UtcNow;
+                            <tr>
+                                <td>
+                                    <strong>@(loan.Book?.Title ?? "Book")</strong>
+                                    <div class="text-muted" style="font-size:0.8rem;">
+                                        @(loan.Book?.AuthorProfile?.PenName ?? "")
+                                    </div>
+                                </td>
+                                <td>@loan.BorrowedAt.ToShortDateString()</td>
+                                <td>@loan.DueAt.ToShortDateString()</td>
+                                <td>
+                                    @if (loan.IsReturned)
+                                    {
+                                        <span class="badge badge-neutral">Returned</span>
+                                    }
+                                    else if (isOverdue)
+                                    {
+                                        <span class="badge badge-rejected">Overdue</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-approved" style="background:#dcfce7;color:#166534;">Active</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (loan.FineAmount > 0)
+                                    {
+                                        <strong style="color:var(--color-danger-500);">$@loan.FineAmount.ToString("F2")</strong>
+                                        <span style="font-size:0.75rem;">@(loan.FinePaid ? "(Paid)" : "(Unpaid)")</span>
+                                    }
+                                    else
+                                    {
+                                        <span>$0.00</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a asp-controller="Books" asp-action="Details" asp-route-id="@loan.BookId" class="text-link">View book</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </main>
+</div>

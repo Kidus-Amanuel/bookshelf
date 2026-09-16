@@ -1,0 +1,168 @@
+@model BookShelf.ViewModels.Admin.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var pendingBooksCount = (int)(ViewData["PendingBooksCount"] ?? 0);
+    var pendingAuthorsCount = (int)(ViewData["PendingAuthorsCount"] ?? 0);
+    var activeLoansCount = (int)(ViewData["ActiveLoansCount"] ?? 0);
+    var overdueLoansCount = (int)(ViewData["OverdueLoansCount"] ?? 0);
+    var membersCount = (int)(ViewData["MembersCount"] ?? 0);
+    var adminDisplay = User.Identity?.Name ?? "Administrator";
+    var firstName = string.IsNullOrWhiteSpace(adminDisplay)
+        ? "Administrator"
+        : adminDisplay.Split(' ', StringSplitOptions.RemoveEmptyEntries).First();
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin Dashboard</p>
+                <h1>Welcome back, @firstName</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Pending approvals</span>
+                <strong class="stat-card-value">@(pendingBooksCount + pendingAuthorsCount)</strong>
+                <small class="stat-card-meta @(pendingBooksCount + pendingAuthorsCount > 0 ? "is-warning" : "")">
+                    @(pendingBooksCount) book@(pendingBooksCount == 1 ? "" : "s") &middot;
+                    @(pendingAuthorsCount) author@(pendingAuthorsCount == 1 ? "" : "s")
+                </small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Active loans</span>
+                <strong class="stat-card-value">@activeLoansCount</strong>
+                <small class="stat-card-meta @(overdueLoansCount > 0 ? "is-warning" : "")">
+                    @(overdueLoansCount) overdue
+                </small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Members</span>
+                <strong class="stat-card-value">@membersCount</strong>
+                <small class="stat-card-meta">total registered</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Recent orders</span>
+                <strong class="stat-card-value">@Model.RecentOrders.Count</strong>
+                <small class="stat-card-meta">across all channels</small>
+            </div>
+        </section>
+
+        <section class="dashboard-panels">
+            <div class="panel-card large">
+                <div class="panel-header">
+                    <h3>Pending book approvals</h3>
+                    <span class="info-pill">@pendingBooksCount waiting</span>
+                </div>
+                <div class="approval-list">
+                    @if (!Model.PendingBooks.Any())
+                    {
+                        <p class="text-muted" style="padding:1rem;">No books waiting for review.</p>
+                    }
+                    else
+                    {
+                        @foreach (var book in Model.PendingBooks)
+                        {
+                            <div class="approval-row">
+                                <div class="approval-row-body">
+                                    <span class="approval-row-title">@book.Title</span>
+                                    <span class="approval-row-meta">@(book.AuthorProfile?.PenName ?? "Unknown author") &middot; submitted @book.CreatedAt.ToShortDateString()</span>
+                                </div>
+                                <div class="approval-actions">
+                                    <a asp-controller="Admin" asp-action="PendingBooks" class="btn btn-secondary btn-sm">Review</a>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3>Author applications</h3>
+                    <span class="info-pill">@pendingAuthorsCount waiting</span>
+                </div>
+                <div class="approval-list">
+                    @if (!Model.PendingAuthors.Any())
+                    {
+                        <p class="text-muted" style="padding:1rem;">No applications in the queue.</p>
+                    }
+                    else
+                    {
+                        @foreach (var application in Model.PendingAuthors)
+                        {
+                            <div class="approval-row">
+                                <div class="approval-row-body">
+                                    <span class="approval-row-title">@application.PenName</span>
+                                    <span class="approval-row-meta">applied @application.AppliedAt.ToShortDateString()</span>
+                                </div>
+                                <a asp-controller="Admin" asp-action="AuthorApplications" class="btn btn-secondary btn-sm">Review</a>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-panels">
+            <div class="panel-card large">
+                <div class="panel-header">
+                    <h3>Recent orders</h3>
+                    <span class="panel-header-meta">All channels</span>
+                </div>
+
+                @if (!Model.RecentOrders.Any())
+                {
+                    <p class="text-muted" style="padding:1rem;">No orders placed yet.</p>
+                }
+                else
+                {
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Order</th><th>Channel</th><th>Items</th><th>Amount</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.RecentOrders)
+                            {
+                                var itemCount = order.OrderItems?.Sum(oi => oi.Quantity) ?? 0;
+                                var badgeClass = order.Status.ToLowerInvariant() switch
+                                {
+                                    "paid" => "badge-paid",
+                                    "shipped" => "badge-shipped",
+                                    "delivered" => "badge-approved",
+                                    "cancelled" => "badge-cancelled",
+                                    _ => "badge-pending"
+                                };
+                                <tr>
+                                    <td>#@order.Id</td>
+                                    <td>@order.Channel@(order.Branch != null ? $" — {order.Branch.Name}" : "")</td>
+                                    <td>@itemCount item@(itemCount == 1 ? "" : "s")</td>
+                                    <td>$@order.TotalAmount.ToString("F2")</td>
+                                    <td><span class="badge @badgeClass">@order.Status</span></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3>Quick actions</h3>
+                </div>
+                <div class="quick-actions">
+                    <a asp-controller="Admin" asp-action="AuthorApplications" class="action-btn">Review author apps</a>
+                    <a asp-controller="Admin" asp-action="PendingBooks" class="action-btn">Review books</a>
+                    <a asp-controller="Admin" asp-action="Branches" class="action-btn">Manage branches</a>
+                    <a asp-controller="Admin" asp-action="Users" class="action-btn">Manage members</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>

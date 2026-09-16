@@ -4,26 +4,64 @@
     ViewData["Title"] = "Books";
 }
 
-<h2>Books</h2>
+<div class="dashboard-shell">
+    <partial name="_CustomerSidebar" />
 
-<table>
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Available</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var book in Model)
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Catalog</p>
+                <h1>Books</h1>
+            </div>
+        </header>
+
+        <form method="get" class="book-toolbar">
+            <input type="search" name="q" placeholder="Search title or author..." class="book-search" />
+            <div class="filter-chips">
+                <a href="#" class="chip active">All</a>
+                <a href="#" class="chip">For sale</a>
+                <a href="#" class="chip">For loan</a>
+            </div>
+        </form>
+
+        @if (!Model.Any())
         {
-            <tr>
-                <td>@book.Title</td>
-                <td>@book.Author</td>
-                <td>@book.Category</td>
-                <td>@(book.IsAvailable ? "Yes" : "No")</td>
-            </tr>
+            <div class="empty-state">
+                <p>No books match your search yet.</p>
+            </div>
         }
-    </tbody>
-</table>
+        else
+        {
+            <div class="book-grid">
+                @foreach (var book in Model)
+                {
+                    var slug = book.Title.ToLower().Replace(" ", "-");
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@book.Id" class="book-card">
+                        <div class="media-cover">
+                            <img src="@(string.IsNullOrEmpty(book.CoverImageUrl) ? $"https://picsum.photos/seed/{slug}/300/450" : book.CoverImageUrl)"
+                                 alt="@book.Title cover" loading="lazy" />
+                            @* TODO: @if (User.IsInRole("Admin") || User.IsInRole("Author")) — customers shouldn't see Pending/Rejected *@
+                            @if (book.Status != "Approved")
+                            {
+                                <span class="media-badge badge-@(book.Status.ToLower())">@book.Status</span>
+                            }
+                        </div>
+                        <div class="media-info">
+                            <span class="media-title">@book.Title</span>
+                            <span class="media-meta">@(book.AuthorProfile?.PenName ?? "Unknown author")</span>
+                            <div class="book-card-footer">
+                                <span class="book-price">
+                                    @(book.Price.HasValue ? "$" + book.Price.Value.ToString("F2") : "Loan only")
+                                </span>
+                                <div class="book-tags">
+                                    @if (book.IsForSale) { <span class="tag">Sale</span> }
+                                    @if (book.IsForLoan) { <span class="tag">Loan</span> }
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </main>
+</div>

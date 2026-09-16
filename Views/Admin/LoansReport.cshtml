@@ -1,0 +1,131 @@
+@model List<BookShelf.Models.Loan>
+@{
+    ViewData["Title"] = "Loans report";
+    var active = (int)(ViewData["ActiveCount"] ?? 0);
+    var overdue = (int)(ViewData["OverdueCount"] ?? 0);
+    var returned = (int)(ViewData["ReturnedCount"] ?? 0);
+    var outstandingFines = (decimal)(ViewData["OutstandingFines"] ?? 0m);
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Reports</p>
+                <h1>Loans report</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Active loans</span>
+                <strong class="stat-card-value">@active</strong>
+                <small class="stat-card-meta">on time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Overdue</span>
+                <strong class="stat-card-value">@overdue</strong>
+                <small class="stat-card-meta @(overdue > 0 ? "is-warning" : "")">need attention</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Returned</span>
+                <strong class="stat-card-value">@returned</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Outstanding fines</span>
+                <strong class="stat-card-value">$@outstandingFines.ToString("F2")</strong>
+                <small class="stat-card-meta @(outstandingFines > 0 ? "is-warning" : "")">to collect</small>
+            </div>
+        </section>
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>Loan ledger</h3>
+                <span class="info-pill">@Model.Count records</span>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted" style="padding:1rem;">No loans recorded yet.</p>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Borrower</th>
+                            <th>Channel</th>
+                            <th>Branch</th>
+                            <th>Borrowed</th>
+                            <th>Due</th>
+                            <th>Returned</th>
+                            <th>Status</th>
+                            <th>Fine</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var loan in Model)
+                        {
+                            var isOverdue = !loan.IsReturned && loan.DueAt < DateTime.UtcNow;
+                            string statusBadge;
+                            string statusText;
+                            if (loan.IsReturned)
+                            {
+                                statusBadge = "badge-neutral";
+                                statusText = "Returned";
+                            }
+                            else if (isOverdue)
+                            {
+                                statusBadge = "badge-rejected";
+                                statusText = "Overdue";
+                            }
+                            else
+                            {
+                                statusBadge = "badge-approved";
+                                statusText = "Active";
+                            }
+                            <tr>
+                                <td>
+                                    <strong>@(loan.Book?.Title ?? "—")</strong>
+                                    <div class="text-muted" style="font-size:.75rem;">@(loan.Book?.AuthorProfile?.PenName ?? "")</div>
+                                </td>
+                                <td>@(loan.User?.FullName ?? "—")<div class="text-muted" style="font-size:.75rem;">@(loan.User?.Email ?? "")</div></td>
+                                <td>@loan.Channel</td>
+                                <td>@(loan.Branch?.Name ?? "—")</td>
+                                <td>@loan.BorrowedAt.ToString("MMM d, yyyy")</td>
+                                <td>@loan.DueAt.ToString("MMM d, yyyy")</td>
+                                <td>@(loan.ReturnedAt?.ToString("MMM d, yyyy") ?? "—")</td>
+                                <td><span class="badge @statusBadge">@statusText</span></td>
+                                <td>
+                                    @if (loan.FineAmount > 0)
+                                    {
+                                        <strong>$@loan.FineAmount.ToString("F2")</strong>
+                                        @if (loan.FinePaid)
+                                        {
+                                            <span class="badge badge-approved" style="margin-left:.25rem;">paid</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-rejected" style="margin-left:.25rem;">unpaid</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</div>

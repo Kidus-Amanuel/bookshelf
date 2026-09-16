@@ -1,0 +1,117 @@
+@model List<BookShelf.Models.Order>
+@{
+    ViewData["Title"] = "Orders report";
+    var totalRevenue = (decimal)(ViewData["TotalRevenue"] ?? 0m);
+    var pending = (int)(ViewData["PendingCount"] ?? 0);
+    var paid = (int)(ViewData["PaidCount"] ?? 0);
+    var shipped = (int)(ViewData["ShippedCount"] ?? 0);
+    var delivered = (int)(ViewData["DeliveredCount"] ?? 0);
+    var cancelled = (int)(ViewData["CancelledCount"] ?? 0);
+}
+
+<div class="dashboard-shell">
+    <partial name="_AdminSidebar" />
+
+    <main class="dashboard-main">
+        <header class="dashboard-topbar">
+            <div>
+                <p class="eyebrow">Admin &middot; Reports</p>
+                <h1>Orders report</h1>
+            </div>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                <button type="submit" class="btn btn-secondary">Sign out</button>
+            </form>
+        </header>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-card-label">Total orders</span>
+                <strong class="stat-card-value">@Model.Count</strong>
+                <small class="stat-card-meta">all time</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Revenue (paid+)</span>
+                <strong class="stat-card-value">$@totalRevenue.ToString("F2")</strong>
+                <small class="stat-card-meta">excluding pending/cancelled</small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Awaiting fulfilment</span>
+                <strong class="stat-card-value">@(pending + paid)</strong>
+                <small class="stat-card-meta @(pending + paid > 0 ? "is-warning" : "")">
+                    @pending pending &middot; @paid paid
+                </small>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card-label">Completed</span>
+                <strong class="stat-card-value">@(delivered + shipped)</strong>
+                <small class="stat-card-meta">shipped &middot; delivered</small>
+            </div>
+        </section>
+
+        <section class="panel-card large" style="margin:0;">
+            <div class="panel-header">
+                <h3>Order ledger</h3>
+                <span class="info-pill">@Model.Count records</span>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <p class="text-muted" style="padding:1rem;">No orders yet.</p>
+            }
+            else
+            {
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Channel</th>
+                            <th>Branch</th>
+                            <th>Items</th>
+                            <th>Subtotal</th>
+                            <th>Discount</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Placed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            var itemCount = order.OrderItems?.Sum(oi => oi.Quantity) ?? 0;
+                            var badgeClass = order.Status.ToLowerInvariant() switch
+                            {
+                                "paid" => "badge-paid",
+                                "shipped" => "badge-shipped",
+                                "delivered" => "badge-approved",
+                                "cancelled" => "badge-cancelled",
+                                _ => "badge-pending"
+                            };
+                            <tr>
+                                <td><strong>#@order.Id</strong></td>
+                                <td>@(order.User?.FullName ?? "—")<div class="text-muted" style="font-size:.75rem;">@(order.User?.Email ?? "")</div></td>
+                                <td>@order.Channel</td>
+                                <td>@(order.Branch?.Name ?? "—")</td>
+                                <td>@itemCount</td>
+                                <td>$@order.Subtotal.ToString("F2")</td>
+                                <td>
+                                    @if (order.DiscountPercent > 0)
+                                    {
+                                        <span class="text-muted">@order.DiscountPercent.ToString("0")%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
+                                </td>
+                                <td><strong>$@order.TotalAmount.ToString("F2")</strong></td>
+                                <td><span class="badge @badgeClass">@order.Status</span></td>
+                                <td class="text-muted">@order.CreatedAt.ToString("MMM d, yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </section>
+    </main>
+</div>
